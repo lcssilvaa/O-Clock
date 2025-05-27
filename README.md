@@ -20,7 +20,7 @@ O O'Clock é um sistema intuitivo desenvolvido em JavaFX, projetado para simplif
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Linguagem:** Java 17+
+* **Linguagem:** Java 21+
 * **Framework UI:** JavaFX
 * **Banco de Dados:** MySQL 8.0+
 * **Gerenciamento de Dependências:** Maven (recomendado, se estiver usando)
@@ -49,7 +49,8 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina local
         email VARCHAR(255) PRIMARY KEY,
         nome VARCHAR(255) NOT NULL,
         senha VARCHAR(255) NOT NULL, -- Armazenará o hash da senha
-        permissao VARCHAR(50) NOT NULL -- Ex: 'admin', 'usuario'
+        permissao VARCHAR(50) NOT NULL, -- Ex: 'admin', 'usuario'
+        telefone VARCHAR(255) NOT NULL
     );
 
     -- Tabela de Registros de Ponto
