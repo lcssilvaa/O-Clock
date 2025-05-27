@@ -3,7 +3,6 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-17+-blue.svg)](https://openjfx.io/)
 [![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://www.java.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A9.svg)](https://www.mysql.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 Sobre o Projeto
 
