@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.CubicCurve?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.MenuUserController">
+   <children>
+      <AnchorPane layoutY="-14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="335.0" style="-fx-background-color: #123057;" stylesheets="@/com/oclock/css/Login.css">
+         <children>
+            <Text fill="#aad7ff" layoutX="107.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Realizar marcação">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Text>
+            <CubicCurve controlX1="-239.79708862304688" controlX2="213.1910400390625" controlY1="-136.0" controlY2="-136.0" endX="164.0" endY="-311.0" fill="#252829cc" layoutX="182.0" layoutY="379.0" startX="-200.89382934570312" startY="-311.0" stroke="#26292a" />
+            <Circle fill="#1f93ff00" layoutX="165.0" layoutY="291.0" radius="63.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="1.5" />
+            <ImageView fx:id="baterPonto" fitHeight="113.0" fitWidth="119.0" layoutX="108.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/digital.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+            <Label fx:id="relogioLabel" layoutX="63.0" layoutY="100.0" prefHeight="86.0" prefWidth="225.0" text="00:00:00" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="52.0" />
+               </font>
+            </Label>
+            <Text fill="#aad7ff" layoutX="95.0" layoutY="108.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seja bem-vindo!">
+               <font>
+                  <Font name="System Bold" size="19.0" />
+               </font>
+            </Text>
+            <Label fx:id="mensagemPonto" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="423.0" prefHeight="17.0" prefWidth="325.0" text="Label" textAlignment="CENTER" visible="false" />
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="59.0" prefWidth="335.0" style="-fx-background-color: #26292a;">
+         <children>
+            <ImageView fitHeight="30.0" fitWidth="29.0" layoutX="283.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/menu.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+            <Text fill="WHITE" layoutX="18.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Marcação de ponto">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Text>
+         </children>
+         <effect>
+            <DropShadow height="125.0" radius="30.75" width="0.0">
+               <color>
+                  <Color opacity="0.5" />
+               </color>
+            </DropShadow>
+         </effect>
+      </AnchorPane>
+   </children>
+</AnchorPane>

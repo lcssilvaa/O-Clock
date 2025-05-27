@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" style="-fx-background-color: #123057;" stylesheets="@/com/oclock/css/Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.TelaLoginController">
+   <children>
+      <AnchorPane prefHeight="59.0" prefWidth="335.0" style="-fx-background-color: #26292a;">
+         <children>
+            <ImageView fitHeight="37.0" fitWidth="179.0" layoutX="14.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/Logo.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="37.0" fitWidth="40.0" layoutX="283.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/duvida.png" />
+               </image>
+            </ImageView>
+         </children>
+         <effect>
+            <DropShadow height="125.0" radius="30.75" width="0.0">
+               <color>
+                  <Color opacity="0.5" />
+               </color>
+            </DropShadow>
+         </effect>
+      </AnchorPane>
+      <Label fx:id="mensagemErro" layoutX="96.0" layoutY="390.0" managed="false" text="Error" textFill="#aad7ff" visible="false" />
+      <ImageView fitHeight="88.0" fitWidth="102.0" layoutX="122.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@/com/oclock/images/tap.png" />
+         </image>
+      </ImageView>
+      <GridPane alignment="TOP_CENTER" layoutX="64.0" layoutY="231.0" prefWidth="215.0" vgap="10.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="200.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TextField fx:id="campoEmail" prefHeight="100.0" prefWidth="250.0" promptText="Email" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="campoSenha" prefHeight="100.0" prefWidth="250.0" promptText="Senha" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </PasswordField>
+            <Hyperlink onAction="#onRedefinirSenha" text="Redefinir Senha" textFill="#aad7ff" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+            <Text fill="#aad7ff" strokeType="OUTSIDE" strokeWidth="0.0" text="Entre com suas credenciais" GridPane.halignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+            <Button fx:id="botaoLogin" mnemonicParsing="false" onAction="#LoginButtonAction" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </GridPane>
+   </children>
+</AnchorPane>

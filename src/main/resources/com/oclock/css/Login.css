@@ -1,0 +1,17 @@
+/* Define a cor do texto para TextField e PasswordField */
+.text-field {
+    -fx-text-fill: white;
+}
+
+.password-field {
+    -fx-text-fill: white;
+}
+
+/* Opcional: Mudar a cor do texto de prompt (placeholder) */
+.text-field .text {
+    -fx-fill: #CCCCCC; /* Um cinza claro para o prompt */
+}
+
+.password-field .text {
+    -fx-fill: #CCCCCC; /* Um cinza claro para o prompt */
+}
