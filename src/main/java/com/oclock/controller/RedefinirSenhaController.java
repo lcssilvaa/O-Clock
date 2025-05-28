@@ -106,11 +106,9 @@ public class RedefinirSenhaController {
            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/TelaLogin.fxml"));
             Parent root = loader.load();
-
-            // Obtém o Stage atual (a janela)
+      
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            // Define a nova cena
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("OnClock - Login"); 
@@ -122,9 +120,6 @@ public class RedefinirSenhaController {
         }
     }
 
-    // =========================================================
-    // MÉTODO PARA A IMAGEM DE VOLTAR (ON MOUSE CLICKED)
-    // =========================================================
     @FXML
     private void imagemVoltarLoginClick(javafx.scene.input.MouseEvent event) {
         voltarParaLogin(new ActionEvent(event.getSource(), event.getTarget()));

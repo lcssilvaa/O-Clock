@@ -76,13 +76,10 @@ public class TelaLoginController {
                 if (loader != null) {
                     root = loader.load(); 
 
-                    // ====================================================================
-                    // Passar o email para o controlador da próxima tela
-                    // ====================================================================
                     if ("admin".equalsIgnoreCase(permission)) {
                         MenuUserController controller = loader.getController();
                         if (controller != null) {
-                            controller.setUserEmail(email); // Chame o método setUserEmail
+                            controller.setUserEmail(email);
                             System.out.println("Passando email para MenuAdminController: " + email);
                         } else {
                             System.err.println("Erro: MenuAdminController é null após load.");
@@ -90,7 +87,7 @@ public class TelaLoginController {
                     } else if ("usuario".equalsIgnoreCase(permission)) {
                         MenuUserController controller = loader.getController();
                         if (controller != null) {
-                            controller.setUserEmail(email); // Chame o método setUserEmail
+                            controller.setUserEmail(email);
                             System.out.println("Passando email para MenuUserController: " + email);
                         } else {
                             System.err.println("Erro: MenuUserController é null após load.");

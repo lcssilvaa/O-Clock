@@ -119,10 +119,8 @@ public class MenuAdminController implements Initializable {
 
     private void iniciarRelogio() {
     	
-        // Formato da hora: HH (hora), mm (minuto), ss (segundo)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-        // Cria uma Timeline que executa uma ação a cada segundo
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             
             LocalTime now = LocalTime.now();
@@ -130,7 +128,6 @@ public class MenuAdminController implements Initializable {
             relogioLabel.setText(now.format(formatter));
         }));
 
-        // Configura a Timeline para repetir indefinidamente
         timeline.setCycleCount(Animation.INDEFINITE);
         
         timeline.play();

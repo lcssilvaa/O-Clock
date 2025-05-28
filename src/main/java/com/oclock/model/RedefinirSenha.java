@@ -21,12 +21,12 @@ public class RedefinirSenha {
         PreparedStatement stmt = null;
         boolean sucesso = false;
 
-        System.out.println("DEBUG: Tentando atualizar senha para o email: " + email); // DEBUG
-        System.out.println("DEBUG: Hash da nova senha gerado: " + novaSenhaHash); // DEBUG
+        System.out.println("DEBUG: Tentando atualizar senha para o email: " + email);
+        System.out.println("DEBUG: Hash da nova senha gerado: " + novaSenhaHash);
 
         try {
             con = DriverManager.getConnection(url, usuarioDB, senhaDB);
-            System.out.println("DEBUG: Conexão com o banco estabelecida."); // DEBUG
+            System.out.println("DEBUG: Conexão com o banco estabelecida.");
 
             String sql = "UPDATE usuarios SET senha = ? WHERE email = ?";
             stmt = con.prepareStatement(sql);
@@ -35,7 +35,7 @@ public class RedefinirSenha {
             stmt.setString(2, email);
 
             int linhasAfetadas = stmt.executeUpdate();
-            System.out.println("DEBUG: Linhas afetadas pelo UPDATE: " + linhasAfetadas); // DEBUG
+            System.out.println("DEBUG: Linhas afetadas pelo UPDATE: " + linhasAfetadas); 
 
             if (linhasAfetadas > 0) {
                 System.out.println("DEBUG: Senha do usuário " + email + " atualizada com sucesso!");
@@ -46,16 +46,16 @@ public class RedefinirSenha {
             }
 
         } catch (SQLException e) {
-            System.err.println("ERRO SQL: Erro ao conectar ou executar comando no banco ao atualizar senha: " + e.getMessage()); // DEBUG
+            System.err.println("ERRO SQL: Erro ao conectar ou executar comando no banco ao atualizar senha: " + e.getMessage());
             e.printStackTrace();
             sucesso = false;
         } finally {
             try {
                 if (stmt != null) stmt.close();
                 if (con != null) con.close();
-                System.out.println("DEBUG: Recursos do banco fechados."); // DEBUG
+                System.out.println("DEBUG: Recursos do banco fechados.");
             } catch (SQLException e) {
-                System.err.println("ERRO: Erro ao fechar recursos de atualização de senha: " + e.getMessage()); // DEBUG
+                System.err.println("ERRO: Erro ao fechar recursos de atualização de senha: " + e.getMessage());
             }
         }
         return sucesso;

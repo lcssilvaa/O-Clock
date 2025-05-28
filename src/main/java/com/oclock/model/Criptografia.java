@@ -7,10 +7,9 @@ public class Criptografia {
 
     public static String gerarHash(String senha) {
 
-        //criptografa a senha no banco de dados
 
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256"); //SHA-256 hash criptografado
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(senha.getBytes());
             StringBuilder sb = new StringBuilder();
 
@@ -20,7 +19,6 @@ public class Criptografia {
 
             return sb.toString();
 
-            // mostra o erro em caso de erro
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Erro ao gerar hash da senha", e);
