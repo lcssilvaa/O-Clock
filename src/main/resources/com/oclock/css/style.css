@@ -1,0 +1,59 @@
+/* Estilo para o ScrollPane e suas barras de rolagem */
+.scroll-pane {
+    /* Garante que o fundo do scrollpane seja transparente */
+    -fx-background-color: transparent;
+
+    /* Remove qualquer background-insets que possa criar bordas indesejadas */
+    -fx-background-insets: 0;
+
+    /* Remove qualquer padding que possa criar espaçamento com fundo */
+    -fx-padding: 0;
+}
+
+/* Estilo para a "viewport" interna do ScrollPane (a área de visualização do conteúdo) */
+.scroll-pane .viewport {
+    -fx-background-color: transparent; /* MUITO IMPORTANTE para a transparência interna */
+}
+
+/* Estilo para a área de rolagem (a "pista" da barra de rolagem) */
+.scroll-pane .track {
+    -fx-background-color: #1a3c61; /* Azul da barra de rolagem */
+    -fx-background-radius: 0;
+}
+
+/* Estilo para o polegar da barra de rolagem (a parte que você arrasta) */
+.scroll-pane .thumb {
+    -fx-background-color: #aad7ff; /* Azul claro para o polegar */
+    -fx-background-radius: 5px;
+}
+
+/* Estilo do polegar quando o mouse passa por cima */
+.scroll-pane .thumb:hover {
+    -fx-background-color: #c0e0fc;
+}
+
+/* Estilo para os botões da barra de rolagem (setas) - se houver */
+.scroll-pane .increment-button,
+.scroll-pane .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Estilo para o ícone das setas dentro dos botões */
+.scroll-pane .increment-arrow,
+.scroll-pane .decrement-arrow {
+    -fx-background-color: #aad7ff;
+}
+
+/* O canto inferior direito do scrollpane onde as barras se encontram */
+.scroll-pane .corner {
+    -fx-background-color: #1a3c61;
+}
+
+/* Para o VBox que contém os cards, apenas para ter certeza que não há fundo inesperado */
+/* Já estamos definindo no Java, mas reforçar aqui não custa nada */
+.vbox-marcacoes-por-dia { /* Vamos usar uma classe para este VBox */
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}

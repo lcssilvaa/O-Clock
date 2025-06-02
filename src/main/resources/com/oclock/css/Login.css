@@ -15,3 +15,62 @@
 .password-field .text {
     -fx-fill: #CCCCCC; /* Um cinza claro para o prompt */
 }
+
+/* Estilo base para todos os botões no seu app (ou um específico para esse) */
+.button {
+    -fx-background-color: #26292a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; /* Opcional, para manter consistência com seu FXML */
+    -fx-background-radius: 5px; /* Opcional: bordas arredondadas */
+    -fx-padding: 8px 15px; /* Opcional: espaçamento interno */
+
+    /* Define a transição para as propriedades que mudarão no hover */
+    -fx-transition: -fx-background-color 0.3s ease, -fx-scale-x 0.3s ease, -fx-scale-y 0.3s ease;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+/* Estilo para o botão específico pelo fx:id (se quiser algo único) */
+/* Você pode referenciar um fx:id no CSS prefixando com # */
+#botaoRedefinirSenha {
+    -fx-background-color: #26292a; /* Cor base */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px 15px;
+
+    /* A transição */
+    -fx-transition: -fx-background-color 0.3s ease, -fx-scale-x 0.3s ease, -fx-scale-y 0.3s ease;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+
+/* Efeito de HOVER quando o mouse passa sobre o botão */
+.button:hover {
+    -fx-background-color: #3e6d9e; /* Cor mais clara ou diferente no hover */
+    -fx-scale-x: 1.05; /* Aumenta ligeiramente na largura */
+    -fx-scale-y: 1.05; /* Aumenta ligeiramente na altura */
+    -fx-cursor: hand; /* Opcional: já está no FXML, mas bom ter aqui */
+}
+
+/* Ou para o botão específico, usando o ID: */
+#botaoRedefinirSenha:hover {
+    -fx-background-color: #3e6d9e; /* Cor mais clara ou diferente no hover */
+    -fx-scale-x: 1.05; /* Aumenta ligeiramente na largura */
+    -fx-scale-y: 1.05; /* Aumenta ligeiramente na altura */
+}
+
+/* Efeito de CLICK (quando o botão é pressionado) */
+.button:pressed {
+    -fx-background-color: #1a2a4e; /* Cor mais escura no clique */
+    -fx-scale-x: 0.98; /* Diminui ligeiramente no clique */
+    -fx-scale-y: 0.98;
+}
+
+/* Ou para o botão específico: */
+#botaoRedefinirSenha:pressed {
+    -fx-background-color: #1a2a4e;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}

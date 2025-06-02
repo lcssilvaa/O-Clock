@@ -4,12 +4,14 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -33,6 +35,7 @@
                   <RowConstraints fx:id="separador" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="31.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="31.0" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="31.0" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="31.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="31.0" minHeight="10.0" prefHeight="31.0" valignment="CENTER" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="31.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
@@ -41,57 +44,70 @@
                   <RowConstraints maxHeight="31.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label fx:id="versaoPref" prefHeight="51.0" prefWidth="255.0" text="Versão: 0.0.1b" textFill="#9ac5fc" />
-                  <Label fx:id="publicacaoPref" prefHeight="51.0" prefWidth="255.0" text="Data de publicação: 05 de maio de 2025" textFill="#9ac5fc" GridPane.rowIndex="2" />
+                  <Label fx:id="versaoPref" prefHeight="51.0" prefWidth="255.0" text="Versão: 0.0.1b" textFill="#9ac5fc">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Label>
+                  <Label fx:id="publicacaoPref" prefHeight="51.0" prefWidth="255.0" text="Data de publicação: 05 de maio de 2025" textFill="#9ac5fc" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Label>
                   <Line endX="154.5" startX="-100.0" stroke="#9ac5fc" GridPane.rowIndex="1" />
-                  <Button fx:id="botaoIdioma" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a;" text="Idioma" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="5">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
-                  <Button fx:id="botaoTema" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a;" text="Tema" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
-                  <Button fx:id="botaoNotificacoes" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a;" text="Notificações" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
-                  <Button fx:id="botaoAcessibilidade" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a;" text="Acessibilidade" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="8">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
-                  <Button fx:id="botaoAjuda" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a;" text="Ajuda" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="9">
+                  <Button fx:id="botaoIdioma" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Idioma" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
                   <Line endX="154.5" startX="-100.0" stroke="#9ac5fc" GridPane.rowIndex="3" />
+                  <Button fx:id="botaoIdioma1" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Tema" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="botaoIdioma11" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Notificações" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="botaoIdioma111" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Acessibilidade" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="9">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="botaoIdioma1111" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Ajuda" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="10">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
                </children>
                <opaqueInsets>
                   <Insets bottom="3.0" />
                </opaqueInsets>
             </GridPane>
-         </children>
-      </AnchorPane>
-      <AnchorPane prefHeight="59.0" prefWidth="335.0" style="-fx-background-color: #26292a;">
-         <children>
-            <ImageView fitHeight="30.0" fitWidth="29.0" layoutX="283.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/com/oclock/images/menu.png" />
-               </image>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ImageView>
-            <Text fill="WHITE" layoutX="18.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferências">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Text>
+            <AnchorPane layoutY="14.0" prefHeight="59.0" prefWidth="335.0" style="-fx-background-color: #26292a;">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="29.0" layoutX="283.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/com/oclock/images/menu.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Text fill="WHITE" layoutX="18.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Marcação de ponto">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+               <effect>
+                  <DropShadow height="125.0" radius="30.75" width="0.0">
+                     <color>
+                        <Color opacity="0.5" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </AnchorPane>
          </children>
       </AnchorPane>
    </children>
