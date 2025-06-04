@@ -37,7 +37,7 @@
             </ImageView>
          </children>
          <effect>
-            <DropShadow height="31.25" radius="7.3125" width="0.0">
+            <DropShadow height="255.0" radius="63.25" width="0.0">
                <color>
                   <Color opacity="0.5" />
                </color>

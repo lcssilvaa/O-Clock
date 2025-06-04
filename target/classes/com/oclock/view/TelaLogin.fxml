@@ -34,7 +34,7 @@
             </ImageView>
          </children>
          <effect>
-            <DropShadow height="125.0" radius="30.75" width="0.0">
+            <DropShadow height="255.0" radius="63.25" width="0.0">
                <color>
                   <Color opacity="0.5" />
                </color>
@@ -42,7 +42,7 @@
          </effect>
       </AnchorPane>
       <Label fx:id="mensagemErro" layoutX="96.0" layoutY="390.0" managed="false" text="Error" textFill="#aad7ff" visible="false" />
-      <ImageView fitHeight="88.0" fitWidth="102.0" layoutX="122.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="88.0" fitWidth="102.0" layoutX="122.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="398.0" AnchorPane.leftAnchor="122.0" AnchorPane.rightAnchor="111.0" AnchorPane.topAnchor="114.0">
          <image>
             <Image url="@/com/oclock/images/tap.png" />
          </image>

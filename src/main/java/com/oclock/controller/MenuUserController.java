@@ -46,6 +46,11 @@ public class MenuUserController implements Initializable {
     private BaterPonto baterPontoService = new BaterPonto();
 
     private boolean sidebarVisible = false;
+    
+    public void initData(String email) {
+        this.emailUsuarioLogado = email;
+        System.out.println("HorasTrabalhadasController: Email do usuário recebido: " + emailUsuarioLogado);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -229,6 +234,30 @@ private void ListarHorasButtonAction(ActionEvent event) {
 
     } catch (IOException e) {
         System.err.println("Erro ao carregar RegistroPonto.fxml: " + e.getMessage());
+        e.printStackTrace();
+    }
+  }
+
+@FXML
+private void handleConfiguracoes(ActionEvent event) {
+	System.out.println("Clicou em Configurações");
+    closeSidebar();
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/Configuracoes.fxml"));
+        Parent root = loader.load();
+
+        ConfiguracoesController controller = loader.getController();
+        if (controller != null) {
+            controller.initData(emailUsuarioLogado);
+        }
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("OnClock - Configurações");
+        stage.show();
+    } catch (IOException e) {
+        System.err.println("Erro ao carregar Configurações.fxml para registrar marcação: " + e.getMessage());
         e.printStackTrace();
     }
   }

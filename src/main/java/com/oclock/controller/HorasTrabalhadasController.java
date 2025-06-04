@@ -227,7 +227,7 @@ public class HorasTrabalhadasController implements Initializable {
 
     private void closeSidebar() {
     	if (overlayPane != null) {
-            // Use javafx.util.Duration explicitamente aqui
+            
             FadeTransition fadeTransition = new FadeTransition(javafx.util.Duration.seconds(0.3), overlayPane);
             fadeTransition.setFromValue(overlayPane.getOpacity());
             fadeTransition.setToValue(0);
@@ -268,6 +268,8 @@ public class HorasTrabalhadasController implements Initializable {
             MenuUserController controller = loader.getController();
             if (controller != null) {
                 controller.setUserEmail(emailUsuarioLogado);
+            } else {
+                System.err.println("Erro: Controlador de MenuUser é nulo ao voltar.");
             }
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -283,8 +285,28 @@ public class HorasTrabalhadasController implements Initializable {
 
     @FXML
     private void handleConfiguracoes(ActionEvent event) {
-        System.out.println("Clicou em Configurações.");
+    	System.out.println("Clicou em Configurações");
         closeSidebar();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/Configuracoes.fxml"));
+            Parent root = loader.load();
+
+            ConfiguracoesController controller = loader.getController();
+            if (controller != null) {
+                controller.initData(emailUsuarioLogado);
+            } else {
+                System.err.println("Erro: Controlador de HorasTrabalhadas é nulo ao voltar.");
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("OnClock - Configurações");
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar Configurações.fxml para registrar marcação: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
