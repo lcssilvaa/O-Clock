@@ -22,9 +22,9 @@ O O'Clock é um sistema intuitivo desenvolvido em JavaFX, projetado para simplif
 * **Linguagem:** Java 21+
 * **Framework UI:** JavaFX
 * **Banco de Dados:** MySQL 8.0+
-* **Gerenciamento de Dependências:** Maven (recomendado, se estiver usando)
+* **Gerenciamento de Dependências:** Maven
 * **Criptografia:** SHA-256
-* **IDE:** Eclipse (recomendado)
+* **IDE:** Eclipse e Intelij
 
 ## 💻 Como Rodar o Projeto
 
