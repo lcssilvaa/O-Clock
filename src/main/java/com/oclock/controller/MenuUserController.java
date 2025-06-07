@@ -40,16 +40,20 @@ public class MenuUserController implements Initializable {
     private AnchorPane overlayPane;
     @FXML
     private AnchorPane sidebarPane;
+    @FXML
+    private AnchorPane sidebarAdminPane;
    
     private Timeline timeline;
-    private String emailUsuarioLogado;
+    private String userEmail, userPermission;
     private BaterPonto baterPontoService = new BaterPonto();
 
     private boolean sidebarVisible = false;
     
-    public void initData(String email) {
-        this.emailUsuarioLogado = email;
-        System.out.println("HorasTrabalhadasController: Email do usuário recebido: " + emailUsuarioLogado);
+    public void initData(String email, String role) {
+        this.userEmail = email;
+        this.userPermission = role;
+        System.out.println("MenuUserController: E-mail: " + userEmail + ", Role: " + userPermission);
+
     }
 
     @Override
@@ -75,11 +79,44 @@ public class MenuUserController implements Initializable {
             mensagemPonto.setVisible(false);
             mensagemPonto.setManaged(false);
         }
+        
+        if (sidebarPane != null) sidebarPane.setVisible(false);
+        if (sidebarAdminPane != null) sidebarAdminPane.setVisible(false);
     }
     
+    private void configureSidebarForRole() {
+        if (sidebarPane == null || sidebarAdminPane == null) {
+            System.err.println("Erro: Painéis de conteúdo do sidebar FXML não injetados em MenuUserController.");
+            return; 
+        }
+
+        if (userPermission == null) {
+            System.err.println("Erro: Role do usuário não definida em MenuUserController para configurar sidebar.");
+           
+            sidebarPane.setVisible(true);
+            sidebarAdminPane.setVisible(false);
+            return;
+        }
+
+        switch (userPermission.toUpperCase()) {
+            case "admin":
+            	sidebarAdminPane.setVisible(true);
+                sidebarPane.setVisible(false);
+                break;
+            case "usuario":
+            	sidebarPane.setVisible(true);
+            	sidebarAdminPane.setVisible(false);
+                break;
+            default:
+                System.err.println("Role desconhecida: " + userPermission + ". Nenhum sidebar de conteúdo exibido.");
+                sidebarPane.setVisible(false);
+                sidebarAdminPane.setVisible(false);
+                break;
+        }
+    }
     public void setUserEmail(String useremail) {
-        this.emailUsuarioLogado = useremail;
-        System.out.println("Email do usuário logado recebido no MenuUserController: " + emailUsuarioLogado);
+        this.userEmail = useremail;
+        System.out.println("Email do usuário logado recebido no MenuUserController: " + userEmail);
     }
 
     private void handleMenuButtonClick(MouseEvent event) {
@@ -125,7 +162,7 @@ public class MenuUserController implements Initializable {
             mensagemPonto.setText("");
         }
 
-        if (emailUsuarioLogado == null || emailUsuarioLogado.isEmpty()) {
+        if (userEmail == null || userEmail.isEmpty()) {
             if (mensagemPonto != null) {
                 mensagemPonto.setText("Erro: Usuário não identificado. Faça login novamente.");
                 mensagemPonto.setStyle("-fx-text-fill: orange;");
@@ -141,14 +178,14 @@ public class MenuUserController implements Initializable {
         String dataHoraAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         try {
-            System.out.println("Chamando baterPontoService.baterPonto para: " + emailUsuarioLogado);
-            pontoRegistradoComSucesso = baterPontoService.baterPonto(emailUsuarioLogado);
+            System.out.println("Chamando baterPontoService.baterPonto para: " + userEmail);
+            pontoRegistradoComSucesso = baterPontoService.baterPonto(userEmail);
 
             if (pontoRegistradoComSucesso) {
-                mensagemFeedback = "Ponto marcado com sucesso em: " + dataHoraAtual + " para " + emailUsuarioLogado;
+                mensagemFeedback = "Ponto marcado com sucesso em: " + dataHoraAtual + " para " + userEmail;
                 mensagemPonto.setStyle("-fx-text-fill: green;");
             } else {
-                mensagemFeedback = "Falha ao registrar ponto para " + emailUsuarioLogado + ". Verifique o console.";
+                mensagemFeedback = "Falha ao registrar ponto para " + userEmail + ". Verifique o console.";
                 mensagemPonto.setStyle("-fx-text-fill: red;");
             }
 
@@ -220,7 +257,7 @@ private void ListarHorasButtonAction(ActionEvent event) {
 
         HorasTrabalhadasController registroController = loader.getController();
         if (registroController != null) {
-            registroController.initData(emailUsuarioLogado);
+            registroController.initData(userEmail);
         } else {
             System.err.println("Erro: Controlador da RegistroPonto.fxml não encontrado.");
         }
@@ -248,7 +285,7 @@ private void handleConfiguracoes(ActionEvent event) {
 
         ConfiguracoesController controller = loader.getController();
         if (controller != null) {
-            controller.initData(emailUsuarioLogado);
+            controller.initData(userEmail);
         }
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -261,4 +298,20 @@ private void handleConfiguracoes(ActionEvent event) {
         e.printStackTrace();
     }
   }
+@FXML
+private void GestaoButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
+
+@FXML
+private void CadastrarButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
+@FXML
+private void RelatorioButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
 }
