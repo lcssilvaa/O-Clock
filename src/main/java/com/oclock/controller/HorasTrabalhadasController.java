@@ -60,7 +60,6 @@ public class HorasTrabalhadasController implements Initializable {
     @FXML private Button clearFilterButton; 
     
     private boolean sidebarVisible = false;
-    private String emailUsuarioLogado;
     private String userEmail, userPermission;
     private HorasTrabalhadas horasTrabalhadasService = new HorasTrabalhadas(); 
 
@@ -169,7 +168,7 @@ public class HorasTrabalhadasController implements Initializable {
     }
 
     private void carregarMarcacoesFiltradas() {
-        if (emailUsuarioLogado == null || emailUsuarioLogado.isEmpty()) {
+        if (userEmail == null || userEmail.isEmpty()) {
             System.err.println("Erro: Email do usuário não definido para carregar marcações em HorasTrabalhadasController.");
             // Exibir mensagem de erro na UI
             if (vboxMarcacoesPorDia != null) {
@@ -201,7 +200,7 @@ public class HorasTrabalhadasController implements Initializable {
 
         // Chamar o serviço com o filtro de datas
         Map<LocalDate, List<LocalDateTime>> marcacoes = 
-            horasTrabalhadasService.getMarcacoesPorUsuarioComFiltro(emailUsuarioLogado, startDate, endDate);
+            horasTrabalhadasService.getMarcacoesPorUsuarioComFiltro(userEmail, startDate, endDate);
 
         // Renderizar as marcações filtradas
         renderMarcacoes(marcacoes);
