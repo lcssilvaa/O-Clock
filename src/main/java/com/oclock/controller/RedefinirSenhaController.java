@@ -124,5 +124,4 @@ public class RedefinirSenhaController {
     private void imagemVoltarLoginClick(javafx.scene.input.MouseEvent event) {
         voltarParaLogin(new ActionEvent(event.getSource(), event.getTarget()));
     }
-
 }

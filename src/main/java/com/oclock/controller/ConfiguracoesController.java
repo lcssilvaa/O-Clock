@@ -192,4 +192,21 @@ public class ConfiguracoesController implements Initializable {
             e.printStackTrace();
         }
     }
+
+@FXML
+private void GestaoButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
+
+@FXML
+private void CadastrarButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
+@FXML
+private void RelatorioButtonAction(ActionEvent event) {
+	System.out.println("Teste");
+	closeSidebar();
+	}
 }
