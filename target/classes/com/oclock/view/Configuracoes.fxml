@@ -15,10 +15,12 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-
-<AnchorPane fx:id="mainContentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.ConfiguracoesController">
+<?import java.net.URL?> <AnchorPane fx:id="mainContentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.ConfiguracoesController">
+   <stylesheets>
+      <URL value="@/com/oclock/css/style.css" />
+      </stylesheets>
    <children>
-      <AnchorPane layoutY="-14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="335.0" style="-fx-background-color: #123057;" stylesheets="@/com/oclock/css/Login.css">
+      <AnchorPane layoutY="-14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="335.0" style="-fx-background-color: #123057;">
          <children>
             <Label fx:id="mensagemPonto" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="423.0" prefHeight="17.0" prefWidth="325.0" text="Label" textAlignment="CENTER" visible="false" />
             <GridPane fx:id="gridPreferencias" alignment="CENTER" layoutX="39.0" layoutY="183.0" pickOnBounds="false" prefWidth="255.0" vgap="10.0">
@@ -50,28 +52,28 @@
                      </font>
                   </Label>
                   <Line endX="154.5" startX="-100.0" stroke="#9ac5fc" GridPane.rowIndex="1" />
-                  <Button fx:id="botaoIdioma" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Idioma" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+                  <Button fx:id="botaoIdioma" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Idioma" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
                   <Line endX="154.5" startX="-100.0" stroke="#9ac5fc" GridPane.rowIndex="3" />
-                  <Button fx:id="btnTema" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Tema" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+                  <Button fx:id="btnTema" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Tema" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnNotificacoes" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Notificações" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+                  <Button fx:id="btnNotificacoes" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Notificações" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="8">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnAcessibilidade" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Acessibilidade" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="9">
+                  <Button fx:id="btnAcessibilidade" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Acessibilidade" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="9">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnAjuda" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Ajuda" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="10">
+                  <Button fx:id="btnAjuda" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Ajuda" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="10">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -115,7 +117,7 @@
       <AnchorPane fx:id="overlayPane" prefHeight="609.0" prefWidth="335.0" style="-fx-background-color: Black;" visible="false" />
       <AnchorPane fx:id="sidebarPane" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
-            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" style="-fx-background-color: #26292a;" text="Consultar horas trabalhadas" textFill="WHITE">
+            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -123,7 +125,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Registrar marcação" textFill="WHITE">
+            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" text="Registrar marcação" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -131,7 +133,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Configurações" textFill="WHITE">
+            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -139,7 +141,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Sair" textFill="WHITE">
+            <Button fx:id="btnSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

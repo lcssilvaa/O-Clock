@@ -57,3 +57,109 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
+/* Define a cor do texto para TextField e PasswordField */
+.text-field {
+    -fx-text-fill: white;
+}
+
+.password-field {
+    -fx-text-fill: white;
+}
+
+/* Opcional: Mudar a cor do texto de prompt (placeholder) */
+.text-field .text {
+    -fx-fill: #CCCCCC; /* Um cinza claro para o prompt */
+}
+
+.password-field .text {
+    -fx-fill: #CCCCCC; /* Um cinza claro para o prompt */
+}
+
+/* Estilo para DatePicker */
+/* Para mudar a cor do DatePicker, precisamos ser mais específicos */
+.dark-datepicker {
+    -fx-background-color: #26292a; /* Cor de fundo igual a do botão */
+    -fx-background-radius: 5px;
+    -fx-border-color: transparent; /* Remove bordas padrão */
+    -fx-text-fill: white; /* Cor do texto digitado */
+    -fx-prompt-text-fill: #CCCCCC; /* Cor do placeholder */
+}
+
+/* Estilo para o campo de texto dentro do DatePicker */
+.dark-datepicker .text-field {
+    -fx-background-color: #26292a; /* Garante que o campo de texto interno também seja escuro */
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #CCCCCC;
+}
+
+/* Estilo para o ícone do calendário dentro do DatePicker */
+.dark-datepicker .arrow-button {
+    -fx-background-color: #26292a; /* Cor de fundo do botão do calendário */
+    -fx-background-radius: 0 5px 5px 0; /* Apenas o lado direito arredondado */
+}
+
+.dark-datepicker .arrow-button .arrow {
+    -fx-background-color: white; /* Cor da seta do calendário */
+}
+
+
+/* Estilo base para todos os botões no seu app (ou um específico para esse) */
+.button {
+    -fx-background-color: #26292a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px; /* Adicionado aqui para aplicar a todos os botões */
+
+    /* Define a transição para as propriedades que mudarão no hover */
+    -fx-transition: -fx-background-color 0.3s ease, -fx-scale-x 0.3s ease, -fx-scale-y 0.3s ease;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+/* Estilo para o botão específico pelo fx:id (se quiser algo único) */
+/* Você pode referenciar um fx:id no CSS prefixando com # */
+#botaoRedefinirSenha {
+    /* Não precisa repetir as propriedades comuns de .button aqui, a menos que queira sobrescrever */
+    -fx-padding: 8px 15px; /* Exemplo: se quiser um padding diferente */
+}
+
+#handleFilterButtonAction {
+    -fx-background-color: #26292a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; /* Opcional, para manter consistência com seu FXML */
+
+    /* Define a transição para as propriedades que mudarão no hover */
+    -fx-transition: -fx-background-color 0.3s ease, -fx-scale-x 0.3s ease, -fx-scale-y 0.3s ease;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+/* Efeito de HOVER quando o mouse passa sobre o botão */
+.button:hover {
+    -fx-background-color: #3e6d9e; /* Cor mais clara ou diferente no hover */
+    -fx-scale-x: 1.1; /* Aumenta ligeiramente na largura */
+    -fx-scale-y: 1.1; /* Aumenta ligeiramente na altura */
+    -fx-cursor: hand;
+}
+
+/* Ou para o botão específico, usando o ID: */
+#botaoRedefinirSenha:hover {
+    -fx-background-color: #3e6d9e;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Efeito de CLICK (quando o botão é pressionado) */
+.button:pressed {
+    -fx-background-color: #1a2a4e; /* Cor mais escura no clique */
+    -fx-scale-x: 0.98; /* Diminui ligeiramente no clique */
+    -fx-scale-y: 0.98;
+}
+
+/* Ou para o botão específico: */
+#botaoRedefinirSenha:pressed {
+    -fx-background-color: #1a2a4e;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}

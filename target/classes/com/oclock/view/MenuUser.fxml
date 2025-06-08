@@ -13,10 +13,12 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-
-<AnchorPane fx:id="mainContentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.MenuUserController">
+<?import java.net.URL?> <AnchorPane fx:id="mainContentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.MenuUserController">
+   <stylesheets>
+      <URL value="@/com/oclock/css/style.css" />
+      </stylesheets>
    <children>
-      <AnchorPane layoutY="-14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="335.0" style="-fx-background-color: #123057;" stylesheets="@/com/oclock/css/Login.css">
+      <AnchorPane layoutY="-14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="624.0" prefWidth="335.0" style="-fx-background-color: #123057;">
          <children>
             <Text fill="#aad7ff" layoutX="107.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Realizar marcação">
                <font>
@@ -73,7 +75,7 @@
       <AnchorPane fx:id="overlayPane" prefHeight="609.0" prefWidth="335.0" style="-fx-background-color: Black;" visible="false" />
       <AnchorPane fx:id="sidebarPane" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
-            <Button fx:id="listarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#ListarHorasButtonAction" prefHeight="36.0" prefWidth="254.0" style="-fx-background-color: #26292a;" text="Consultar horas trabalhadas" textFill="WHITE">
+            <Button fx:id="listarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#ListarHorasButtonAction" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -81,7 +83,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Registrar marcação" textFill="WHITE">
+            <Button layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="259.0" text="Registrar marcação" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -89,7 +91,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Configurações" textFill="WHITE">
+            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -97,7 +99,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="botaoSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#SairButtonAction" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Sair" textFill="WHITE">
+            <Button fx:id="botaoSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#SairButtonAction" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -139,9 +141,10 @@
                   <Image url="@/com/oclock/images/Logo.png" />
                </image>
             </ImageView>
+            
             <AnchorPane fx:id="sidebarAdminPane" layoutY="1.0" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
                <children>
-                  <Button fx:id="listarHoras1" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#ListarHorasButtonAction" prefHeight="36.0" prefWidth="254.0" style="-fx-background-color: #26292a;" text="Consultar horas trabalhadas" textFill="WHITE">
+                  <Button fx:id="listarHoras1" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#ListarHorasButtonAction" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -149,7 +152,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Registrar marcação" textFill="WHITE">
+                  <Button layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="259.0" text="Registrar marcação" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -157,7 +160,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnConfiguracoes1" layoutX="-30.0" layoutY="274.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Configurações" textFill="WHITE">
+                  <Button fx:id="btnConfiguracoes1" layoutX="-30.0" layoutY="274.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -165,7 +168,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="botaoSair1" layoutX="-63.0" layoutY="320.0" mnemonicParsing="false" onAction="#SairButtonAction" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Sair" textFill="WHITE">
+                  <Button fx:id="botaoSair1" layoutX="-63.0" layoutY="320.0" mnemonicParsing="false" onAction="#SairButtonAction" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -207,7 +210,7 @@
                         <Image url="@/com/oclock/images/Logo.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="btnRelatorio" layoutX="-19.0" layoutY="229.0" mnemonicParsing="false" onAction="#RelatorioButtonAction" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Exportar relatório" textFill="WHITE">
+                  <Button fx:id="btnRelatorio" layoutX="-19.0" layoutY="229.0" mnemonicParsing="false" onAction="#RelatorioButtonAction" prefHeight="36.0" prefWidth="259.0" text="Exportar relatório" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -215,7 +218,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnGestao" layoutX="-16.0" layoutY="144.0" mnemonicParsing="false" onAction="#GestaoButtonAction" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Gestão de usuários" textFill="WHITE">
+                  <Button fx:id="btnGestao" layoutX="-16.0" layoutY="144.0" mnemonicParsing="false" onAction="#GestaoButtonAction" prefHeight="36.0" prefWidth="259.0" text="Gestão de usuários" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -226,7 +229,7 @@
                   <Line endX="157.73306274414062" layoutX="112.0" layoutY="269.0" startX="-100.0" stroke="#c0e0fc" />
                   <Line endX="157.73306274414062" layoutX="112.0" layoutY="315.0" startX="-100.0" stroke="#c0e0fc" />
                   <Line endX="157.73306274414062" layoutX="113.0" layoutY="362.0" startX="-100.0" stroke="#c0e0fc" />
-                  <Button fx:id="btnCadastrar" layoutX="-21.0" layoutY="186.0" mnemonicParsing="false" onAction="#CadastrarButtonAction" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Cadastrar usuário" textFill="WHITE">
+                  <Button fx:id="btnCadastrar" layoutX="-21.0" layoutY="186.0" mnemonicParsing="false" onAction="#CadastrarButtonAction" prefHeight="36.0" prefWidth="259.0" text="Cadastrar usuário" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>

@@ -4,11 +4,14 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Line?>
@@ -45,13 +48,64 @@
          </effect>
       </AnchorPane>
 
-      <ScrollPane fitToWidth="true" layoutY="59.0" prefHeight="541.0" prefWidth="335.0" style="-fx-background-color: transparent; -fx-hbar-policy: never;">
+      <VBox layoutY="59.0" prefHeight="80.0" prefWidth="335.0" style="-fx-background-color: #123057; -fx-padding: 10;">
+          <children>
+              <HBox alignment="CENTER" spacing="5.0" VBox.vgrow="ALWAYS">
+                  <children>
+                      <Label text="Início:" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="10.0" />
+                     </font></Label>
+                      <DatePicker fx:id="startDatePicker" prefHeight="25.0" prefWidth="120.0" promptText="Data Inicial" style="-fx-border-color: #555555; -fx-border-radius: 6;" styleClass="dark-datepicker"> <cursor>
+                              <Cursor fx:constant="HAND" />
+                          </cursor>
+                      </DatePicker>
+                      <Label text="Fim:" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="10.0" />
+                     </font></Label>
+                      <DatePicker fx:id="endDatePicker" prefHeight="25.0" prefWidth="120.0" promptText="Data Final" style="-fx-border-color: #555555; -fx-border-radius: 6;" styleClass="dark-datepicker"> <cursor>
+                              <Cursor fx:constant="HAND" />
+                          </cursor>
+                      </DatePicker>
+                  </children>
+                  <padding>
+                      <Insets left="5.0" right="5.0" />
+                  </padding>
+              </HBox>
+              <HBox alignment="CENTER" prefHeight="25.0" prefWidth="315.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                  <children>
+                      <Button fx:id="filterButton" onAction="#handleFilterButtonAction" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Filtrar" textFill="WHITE">
+                          <font>
+                              <Font name="System Bold" size="12.0" />
+                          </font>
+                          <cursor>
+                              <Cursor fx:constant="HAND" />
+                          </cursor>
+                      </Button>
+                      <Button fx:id="clearFilterButton" onAction="#handleClearFilterButtonAction" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Limpar Filtro" textFill="WHITE">
+                          <font>
+                              <Font name="System Bold" size="12.0" />
+                          </font>
+                          <cursor>
+                              <Cursor fx:constant="HAND" />
+                          </cursor>
+                      </Button>
+                  </children>
+                  <padding>
+                      <Insets left="5.0" right="5.0" />
+                  </padding>
+              </HBox>
+          </children>
+      </VBox>
+
+      <ScrollPane fitToWidth="true" layoutY="139.0" prefHeight="461.0" prefWidth="335.0" style="-fx-background-color: transparent; -fx-hbar-policy: never;">
          <content>
             <VBox fx:id="vboxMarcacoesPorDia" alignment="TOP_CENTER" prefWidth="325.0" spacing="10.0">
                <padding>
                   <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                </padding>
-               </VBox>
+            </VBox>
          </content>
       </ScrollPane>
 
@@ -59,7 +113,7 @@
 
       <AnchorPane fx:id="sidebarPane" prefHeight="600.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
-            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" style="-fx-background-color: #26292a;" text="Consultar Horas Trabalhadas" textFill="WHITE">
+            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar Horas Trabalhadas" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -67,7 +121,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Registrar Marcação" textFill="WHITE">
+            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" text="Registrar Marcação" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -75,7 +129,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Configurações" textFill="WHITE">
+            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -83,7 +137,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" style="-fx-background-color: #26292a;" text="Sair" textFill="WHITE">
+            <Button fx:id="btnSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
