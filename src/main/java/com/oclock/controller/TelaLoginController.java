@@ -9,8 +9,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.scene.Node;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -26,7 +26,7 @@ public class TelaLoginController {
     private Label mensagemErro;
     @FXML
     private Hyperlink redefinirSenha;
-    
+
     private FazerLogin fazerLogin = new FazerLogin();
 
     @FXML
@@ -49,12 +49,11 @@ public class TelaLoginController {
                 mensagemErro.setVisible(true);
                 mensagemErro.setManaged(true);
             }
-            System.out.println("Login bem-sucedido! Permissão: " + permission + ", Email: " + email); 
 
             try {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Parent root = null;
                 FXMLLoader loader = null;
+                Object controllerInstance = null;
 
                 if ("admin".equalsIgnoreCase(permission)) {
                     loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuAdmin.fxml"));
@@ -69,31 +68,28 @@ public class TelaLoginController {
                         mensagemErro.setVisible(true);
                         mensagemErro.setManaged(true);
                     }
-                    System.err.println("Erro: Permissão de usuário desconhecida: " + permission);
                     return;
                 }
 
                 if (loader != null) {
-                    root = loader.load(); 
+                    Parent root = loader.load();
+                    controllerInstance = loader.getController();
 
-                    if ("admin".equalsIgnoreCase(permission)) {
-                        MenuUserController controller = loader.getController();
-                        if (controller != null) {
-                            controller.setUserEmail(email);
-                            System.out.println("Passando email para MenuAdminController: " + email);
-                        } else {
-                            System.err.println("Erro: MenuAdminController é null após load.");
-                        }
-                    } else if ("usuario".equalsIgnoreCase(permission)) {
-                        MenuUserController controller = loader.getController();
-                        if (controller != null) {
-                            controller.setUserEmail(email);
-                            System.out.println("Passando email para MenuUserController: " + email);
-                        } else {
-                            System.err.println("Erro: MenuUserController é null após load.");
+                    if (controllerInstance != null) {
+                        if ("admin".equalsIgnoreCase(permission)) {
+                             if (controllerInstance instanceof MenuUserController) {
+                                 MenuUserController menuUserController = (MenuUserController) controllerInstance;
+                                 menuUserController.initData(email, permission);
+                                 menuUserController.configureSidebarForRole();
+                             }
+                        } else if ("usuario".equalsIgnoreCase(permission)) {
+                            if (controllerInstance instanceof MenuUserController) {
+                                MenuUserController menuUserController = (MenuUserController) controllerInstance;
+                                menuUserController.initData(email, permission);
+                                menuUserController.configureSidebarForRole();
+                            }
                         }
                     }
-
                     Scene scene = new Scene(root);
                     stage.setScene(scene);
                     stage.show();
@@ -107,7 +103,6 @@ public class TelaLoginController {
                     mensagemErro.setVisible(true);
                     mensagemErro.setManaged(true);
                 }
-                System.err.println("Erro ao carregar FXML do menu: " + e.getMessage());
             }
         } else {
             if (mensagemErro != null) {
@@ -116,13 +111,12 @@ public class TelaLoginController {
                 mensagemErro.setVisible(true);
                 mensagemErro.setManaged(true);
             }
-            System.out.println("Login falhou para o e-mail: " + email);
         }
     }
 
     @FXML
     private void onRedefinirSenha(ActionEvent event) {
-    	try {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/RedefinirSenha.fxml"));
             Parent root = loader.load();
 
@@ -131,9 +125,7 @@ public class TelaLoginController {
             stage.setScene(scene);
             stage.setTitle("OnClock - Redefinir Senha");
             stage.show();
-            System.out.println("Abrindo tela de Redefinir Senha via Hyperlink/Button.");
         } catch (IOException e) {
-            System.err.println("Erro ao carregar TelaRedefinirSenha.fxml: " + e.getMessage());
             e.printStackTrace();
         }
     }

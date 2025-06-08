@@ -3,18 +3,29 @@ package com.oclock.controller;
 import javafx.util.Duration;
 import java.util.Comparator;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -26,13 +37,17 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 public class HorasTrabalhadasController implements Initializable {
 
-    @FXML
+	private final Locale BRAZIL_LOCALE = new Locale("pt", "BR");
+
+	@FXML
     private VBox vboxMarcacoesPorDia;
 
     @FXML
@@ -41,9 +56,10 @@ public class HorasTrabalhadasController implements Initializable {
     private AnchorPane sidebarPane;
     @FXML
     private ImageView botaoMenu;
-
+    @FXML
+    private ImageView arrowIcon = new ImageView();
+    
     private boolean sidebarVisible = false;
-
     private String emailUsuarioLogado;
     private HorasTrabalhadas horasTrabalhadasService = new HorasTrabalhadas();
 
@@ -79,7 +95,7 @@ public class HorasTrabalhadasController implements Initializable {
 
     private void carregarMarcacoes() {
         
-        if (emailUsuarioLogado == null || emailUsuarioLogado.isEmpty()) {
+    	if (emailUsuarioLogado == null || emailUsuarioLogado.isEmpty()) {
             System.err.println("Erro: Email do usuário não definido para carregar marcações em HorasTrabalhadasController.");
             Label errorLabel = new Label("Não foi possível carregar as marcações. Usuário não identificado.");
             errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
@@ -89,15 +105,12 @@ public class HorasTrabalhadasController implements Initializable {
             return;
         }
 
-        // Limpa qualquer conteúdo anterior do VBox principal para exibir as novas marcações
         if (vboxMarcacoesPorDia != null) {
             vboxMarcacoesPorDia.getChildren().clear();
         }
 
-        // Busca as marcações de ponto do usuário no serviço (model)
         Map<LocalDate, List<LocalDateTime>> marcacoes = horasTrabalhadasService.getMarcacoesPorUsuario(emailUsuarioLogado);
 
-        // Verifica se não há marcações encontradas
         if (marcacoes.isEmpty()) {
             Label noDataLabel = new Label("Nenhuma marcação de ponto encontrada para este usuário.");
             noDataLabel.setStyle("-fx-text-fill: white; -fx-font-style: italic;");
@@ -111,111 +124,205 @@ public class HorasTrabalhadasController implements Initializable {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-        for (Map.Entry<LocalDate, List<LocalDateTime>> entry : marcacoes.entrySet()) {
-            LocalDate data = entry.getKey();
-            List<LocalDateTime> pontosDoDia = entry.getValue();
+        // Ordenar as datas para exibir em ordem cronológica inversa (mais recentes primeiro)
+        marcacoes.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+            .forEach(entry -> {
+                LocalDate data = entry.getKey();
+                List<LocalDateTime> pontosDoDia = entry.getValue();
+                pontosDoDia.sort(LocalDateTime::compareTo); // Garante que os pontos estão em ordem cronológica
 
-            // Cria um VBox para representar o 'card' de cada dia de marcação
-            VBox dailyBox = new VBox(5);
-
-            // Define a largura do card
-            if (vboxMarcacoesPorDia != null) {
-                dailyBox.setPrefWidth(vboxMarcacoesPorDia.getPrefWidth() - 20);
-            } else {
-                dailyBox.setPrefWidth(300); // Largura padrão de emergência
-            }
-
-            // --- ESTILO AINDA MAIS BONITO PARA O CARD ---
-            dailyBox.setStyle(
-                "-fx-background-color: #26292a;" + // Fundo do card cinza escuro (o mesmo do sidebar)
-                "-fx-padding: 12;" +              // Preenchimento interno
-                "-fx-border-radius: 8;" +         // Arredondamento das bordas
-                "-fx-background-radius: 8;" +     // Arredondamento do fundo
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 6);" // Sombra um pouco mais pronunciada
-            );
-
-            // Estilo para a data (topo do card)
-            Label dateLabel = new Label(data.format(dateFormatter));
-            dateLabel.setStyle(
-                "-fx-font-weight: bold;" +
-                "-fx-font-size: 16px;" +
-                "-fx-text-fill: #AAD7FF;" + // Azul claro vibrante para a data
-                "-fx-padding: 0 0 2 0;" // Pequeno padding inferior
-            );
-            dailyBox.getChildren().add(dateLabel);
-
-            // Linha separadora: mais fina e um tom de azul que combine
-            AnchorPane separator = new AnchorPane();
-            separator.setPrefHeight(0.8); // Linha mais fina
-            separator.setPrefWidth(dailyBox.getPrefWidth() - 30);
-            separator.setStyle("-fx-background-color: #3F5E82; -fx-opacity: 0.8;"); // Azul um pouco mais escuro e sólido
-            javafx.scene.layout.VBox.setMargin(separator, new javafx.geometry.Insets(0, 0, 10, 0)); // Margem inferior maior
-            dailyBox.getChildren().add(separator);
-
-            // Estilo para as horas marcadas
-            for (LocalDateTime ponto : pontosDoDia) {
-                Label timeLabel = new Label("• " + ponto.format(timeFormatter));
-                timeLabel.setStyle(
-                    "-fx-font-size: 14px;" +
-                    "-fx-text-fill: #FFFFFF;" + // Branco puro para as horas
-                    "-fx-padding: 2 0 2 0;" // Pequeno padding vertical
+                // --- CONTAINER PRINCIPAL DO DIA (O QUE TERÁ A BORDA E O COMPORTAMENTO DE EXPANDIR) ---
+                VBox dailyContainer = new VBox(5);
+                dailyContainer.setPadding(new Insets(12));
+                dailyContainer.setStyle(
+                    "-fx-background-color: #26292a;" +
+                    "-fx-border-radius: 8;" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 6);" +
+                    "-fx-cursor: hand;" // Adiciona um cursor de mão para indicar que é clicável
                 );
-                dailyBox.getChildren().add(timeLabel);
-            }
-            if (vboxMarcacoesPorDia != null) {
-                 vboxMarcacoesPorDia.getChildren().add(dailyBox);
-            }
-            System.out.println("DEBUG: Adicionada marcação para o dia: " + data);
-            
-            long totalSecondsToday = 0;
-            if (pontosDoDia.size() >= 2) {
-                
-                pontosDoDia.sort(LocalDateTime::compareTo);
+                VBox.setMargin(dailyContainer, new Insets(0, 0, 10, 0)); // Margem inferior entre os dias
 
-                // abaixo, calcula a hora trabalhada no dia
-                
-                for (int i = 0; i < pontosDoDia.size() - 1; i += 2) {
-                    LocalDateTime entryTime = pontosDoDia.get(i);
-                    LocalDateTime exitTime = pontosDoDia.get(i + 1);
-                    if (exitTime.isAfter(entryTime)) {
-                       
-                        totalSecondsToday += java.time.Duration.between(entryTime, exitTime).getSeconds();
+                // --- CABEÇALHO CLICÁVEL (DATA + TOTAL DO DIA NO MESMO HBOX) ---
+                HBox header = new HBox(10); // Espaçamento entre a data e o total
+                header.setAlignment(Pos.CENTER_LEFT); // Alinha o conteúdo à esquerda
+                HBox.setHgrow(header, Priority.ALWAYS); // Permite que o cabeçalho preencha a largura
+
+                // Label da Data com Dia da Semana
+                Label dateLabel = new Label(data.format(dateFormatter));
+                dateLabel.setStyle(
+                    "-fx-font-weight: bold;" +
+                    "-fx-font-size: 16px;" +
+                    "-fx-text-fill: #AAD7FF;"
+                );
+                HBox.setHgrow(dateLabel, Priority.ALWAYS); // Faz a data ocupar o espaço e empurrar o total para a direita
+
+                // Calcular o total de horas do dia para o cabeçalho
+                long totalSecondsToday = 0;
+                if (pontosDoDia.size() >= 2) {
+                    for (int i = 0; i < pontosDoDia.size() - 1; i += 2) {
+                        LocalDateTime entryTime = pontosDoDia.get(i);
+                        LocalDateTime exitTime = pontosDoDia.get(i + 1);
+                        if (exitTime.isAfter(entryTime)) {
+                           totalSecondsToday += java.time.Duration.between(entryTime, exitTime).getSeconds(); // CORRIGIDO AQUI
+                        }
                     }
                 }
+                java.time.Duration totalDurationToday = java.time.Duration.ofSeconds(totalSecondsToday); // CORRIGIDO AQUI
+                Label totalHoursSummaryLabel = new Label(
+                    String.format("Total: %02d:%02d:%02d",
+                        totalDurationToday.toHours(),
+                        totalDurationToday.toMinutesPart(),
+                        totalDurationToday.toSecondsPart())
+                );
+                totalHoursSummaryLabel.setStyle(
+                    "-fx-font-weight: bold;" +
+                    "-fx-font-size: 14px;" +
+                    "-fx-text-fill: #92B4F4;" // Cor para o total
+                );
+                totalHoursSummaryLabel.setAlignment(Pos.CENTER_RIGHT); // Alinha o texto da label à direita
 
-                java.time.Duration totalDuration = java.time.Duration.ofSeconds(totalSecondsToday);
-                long hours = totalDuration.toHours();
-                long minutes = totalDuration.toMinutesPart();
-                long seconds = totalDuration.toSecondsPart();
+                header.getChildren().addAll(dateLabel, totalHoursSummaryLabel);
+                dailyContainer.getChildren().add(header);
 
-            Label totalHoursLabel = new Label(
-                String.format("Total: %02d:%02d:%02d", hours, minutes, seconds)
-            );
-            totalHoursLabel.setStyle(
-                "-fx-font-weight: bold;" +
-                "-fx-font-size: 14px;" +
-                "-fx-text-fill: #92B4F4;" + // Um tom de azul diferente ou verde para destaque
-                "-fx-alignment: center-right;" // Alinha à direita para contraste
-            );
-            dailyBox.getChildren().add(totalHoursLabel);
-            }
-        }
+
+                // --- SEPARADOR ---
+                AnchorPane separator = new AnchorPane();
+                separator.setPrefHeight(0.8);
+                separator.setStyle("-fx-background-color: #3F5E82; -fx-opacity: 0.8;");
+                VBox.setMargin(separator, new Insets(0, 0, 10, 0));
+                dailyContainer.getChildren().add(separator);
+
+
+                // --- CONTEÚDO EXPANSÍVEL (PARES DE HORAS E DURAÇÃO) ---
+                VBox expandableContent = new VBox(5);
+                expandableContent.setManaged(false); // Não ocupa espaço quando está colapsado (para animação)
+                expandableContent.setVisible(false); // Invisível inicialmente
+                expandableContent.setOpacity(0.0); // Começa com opacidade 0 para o fade
+
+                // Adicionar os pares de entrada/saída e suas durações
+                for (int i = 0; i < pontosDoDia.size(); i++) {
+                    LocalDateTime ponto = pontosDoDia.get(i);
+                    Label pointLabel;
+
+                    if (i % 2 == 0) { // Entrada
+                        pointLabel = new Label("Entrada: " + ponto.format(timeFormatter));
+                        pointLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #7CFC00;"); // Verde para entrada
+                        expandableContent.getChildren().add(pointLabel); // Adiciona a entrada imediatamente
+                    } else { // Saída
+                        LocalDateTime entryTime = pontosDoDia.get(i - 1);
+                        pointLabel = new Label("Saída: " + ponto.format(timeFormatter));
+                        pointLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #FF6347;"); // Vermelho para saída
+
+                        // Calcula e exibe a duração do bloco de trabalho
+                        if (ponto.isAfter(entryTime)) {
+                            java.time.Duration blockDuration = java.time.Duration.between(entryTime, ponto); // CORRIGIDO AQUI
+                            Label durationLabel = new Label(
+                                String.format("(%02d:%02d:%02d)",
+                                    blockDuration.toHours(),
+                                    blockDuration.toMinutesPart(),
+                                    blockDuration.toSecondsPart())
+                            );
+                            durationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #ADD8E6; -fx-padding: 0 0 0 15;"); // Azul claro
+                            HBox blockInfo = new HBox(5, pointLabel, durationLabel); // Agrupa ponto e duração
+                            blockInfo.setAlignment(Pos.CENTER_LEFT);
+                            expandableContent.getChildren().add(blockInfo);
+                        } else {
+                            expandableContent.getChildren().add(pointLabel); // Adiciona só o ponto se a saída não é válida
+                        }
+                    }
+                }
+                
+                // Lidar com ponto de entrada sem saída correspondente
+                if (pontosDoDia.size() % 2 != 0) {
+                    Label pendingExitLabel = new Label("• Saída pendente");
+                    pendingExitLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #FFD700; -fx-font-weight: bold;"); // Amarelo para pendente
+                    expandableContent.getChildren().add(pendingExitLabel);
+                }
+
+
+                dailyContainer.getChildren().add(expandableContent);
+
+
+                // --- LÓGICA DE ANIMAÇÃO DE EXPANSÃO/COLAPSO ---
+                dailyContainer.setOnMouseClicked(event -> {
+                    boolean isVisible = expandableContent.isManaged();
+
+                    Timeline timeline = new Timeline();
+                    // FadeTransition ft = new FadeTransition(Duration.millis(200), expandableContent); // Removido, opacidade controlada pela Timeline
+
+                    if (isVisible) { // Se está visível (expandido), vai colapsar
+                        timeline.getKeyFrames().addAll(
+                            new KeyFrame(Duration.ZERO, // MANTENHA javafx.util.Duration AQUI
+                                new KeyValue(expandableContent.prefHeightProperty(), expandableContent.getHeight()),
+                                new KeyValue(expandableContent.opacityProperty(), 1.0)
+                            ),
+                            new KeyFrame(javafx.util.Duration.millis(200), // MANTENHA javafx.util.Duration AQUI
+                                new KeyValue(expandableContent.prefHeightProperty(), 0, Interpolator.EASE_BOTH), // CORRIGIDO AQUI
+                                new KeyValue(expandableContent.opacityProperty(), 0.0, Interpolator.EASE_BOTH) // CORRIGIDO AQUI
+                            )
+                        );
+                        timeline.setOnFinished(e -> {
+                            expandableContent.setVisible(false);
+                            expandableContent.setManaged(false);
+                        });
+                    } else { // Se está invisível (colapsado), vai expandir
+                        expandableContent.setVisible(true);
+                        expandableContent.setManaged(true); // Começa a ocupar espaço (mas altura ainda 0)
+                        
+                        // Garante que o layout seja calculado antes de pegar a altura.
+                        expandableContent.applyCss();
+                        expandableContent.layout();
+                        double targetHeight = expandableContent.prefHeight(-1); // Calcula a altura necessária
+                        
+                        timeline.getKeyFrames().addAll(
+                            new KeyFrame(Duration.ZERO, // MANTENHA javafx.util.Duration AQUI
+                                new KeyValue(expandableContent.prefHeightProperty(), 0),
+                                new KeyValue(expandableContent.opacityProperty(), 0.0)
+                            ),
+                            new KeyFrame(javafx.util.Duration.millis(200), // MANTENHA javafx.util.Duration AQUI
+                                new KeyValue(expandableContent.prefHeightProperty(), targetHeight, Interpolator.EASE_BOTH), // CORRIGIDO AQUI
+                                new KeyValue(expandableContent.opacityProperty(), 1.0, Interpolator.EASE_BOTH) // CORRIGIDO AQUI
+                            )
+                        );
+                    }
+                    // timeline.setInterpolator(Interpolator.EASE_BOTH); // REMOVIDO AQUI
+
+                    timeline.play();
+                });
+
+                // --- Efeito de Hover (Opcional, mas melhora a UX) ---
+                final String defaultStyle = dailyContainer.getStyle(); // Guarda o estilo original
+                final String hoverStyle = "-fx-background-color: #313536; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 8); -fx-cursor: hand;"; // Estilo ao passar o mouse
+
+                dailyContainer.setOnMouseEntered(e -> dailyContainer.setStyle(hoverStyle));
+                dailyContainer.setOnMouseExited(e -> dailyContainer.setStyle(defaultStyle));
+
+
+                // Adiciona o dailyContainer completo ao vboxMarcacoesPorDia pai
+                if (vboxMarcacoesPorDia != null) {
+                    vboxMarcacoesPorDia.getChildren().add(dailyContainer);
+                }
+            });
     }
+  
+  
     private void handleMenuButtonClick(MouseEvent event) {
     	System.out.println("handleMenuButtonClick: Botão de menu clicado em HorasTrabalhadas!");
         if (overlayPane != null) {
             overlayPane.setVisible(true);
-            overlayPane.setMouseTransparent(false); // Torna o overlay interativo para que possa ser clicado
-            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane); // Define a duração e o nó
+            overlayPane.setMouseTransparent(false); 
+            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane); 
             fadeTransition.setFromValue(overlayPane.getOpacity());
             fadeTransition.setToValue(0.4);
             fadeTransition.play();
         }
 
         if (sidebarPane != null) {
-            sidebarPane.setMouseTransparent(false); // Torna o sidebar interativo
-            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), sidebarPane); // Define a duração e o nó
-            translateTransition.setToX(0); // Move para a posição visível
+            sidebarPane.setMouseTransparent(false);
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            translateTransition.setToX(0); 
             translateTransition.play();
         }
         sidebarVisible = true;

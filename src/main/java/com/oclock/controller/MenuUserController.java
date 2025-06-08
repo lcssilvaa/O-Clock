@@ -52,7 +52,7 @@ public class MenuUserController implements Initializable {
     public void initData(String email, String role) {
         this.userEmail = email;
         this.userPermission = role;
-        System.out.println("MenuUserController: E-mail: " + userEmail + ", Role: " + userPermission);
+        System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
 
     }
 
@@ -79,12 +79,9 @@ public class MenuUserController implements Initializable {
             mensagemPonto.setVisible(false);
             mensagemPonto.setManaged(false);
         }
-        
-        if (sidebarPane != null) sidebarPane.setVisible(false);
-        if (sidebarAdminPane != null) sidebarAdminPane.setVisible(false);
     }
     
-    private void configureSidebarForRole() {
+    public void configureSidebarForRole() {
         if (sidebarPane == null || sidebarAdminPane == null) {
             System.err.println("Erro: Painéis de conteúdo do sidebar FXML não injetados em MenuUserController.");
             return; 
@@ -99,11 +96,11 @@ public class MenuUserController implements Initializable {
         }
 
         switch (userPermission.toUpperCase()) {
-            case "admin":
+            case "ADMIN":
             	sidebarAdminPane.setVisible(true);
                 sidebarPane.setVisible(false);
                 break;
-            case "usuario":
+            case "USUARIO":
             	sidebarPane.setVisible(true);
             	sidebarAdminPane.setVisible(false);
                 break;
