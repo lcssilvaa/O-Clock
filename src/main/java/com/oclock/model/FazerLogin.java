@@ -9,8 +9,9 @@ public class FazerLogin {
         Criptografia crip = new Criptografia(); 
         String senhaHash = crip.gerarHash(senha); 
 
+
         try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/OnClock", "root", "");
-             PreparedStatement stmt = con.prepareStatement("SELECT permissao FROM usuarios WHERE email = ? AND senha = ?")) {
+             PreparedStatement stmt = con.prepareStatement("SELECT permissao FROM usuarios WHERE email = ? AND senha_hash = ?")) {
 
             stmt.setString(1, email); 
             stmt.setString(2, senhaHash); 
