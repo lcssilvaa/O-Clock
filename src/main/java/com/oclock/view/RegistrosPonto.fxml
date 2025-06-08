@@ -181,7 +181,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="sidebarAdminPane" layoutX="2.0" layoutY="-10.0" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
+      <AnchorPane fx:id="sidebarAdminPane" layoutX="-2.0" layoutY="-2.0" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
             <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                <font>

@@ -50,10 +50,9 @@ public class HorasTrabalhadasController implements Initializable {
     @FXML
     private AnchorPane overlayPane;
     @FXML
-    private AnchorPane sidebarPane;
+    private AnchorPane sidebarPane, sidebarAdminPane;
     @FXML
     private ImageView botaoMenu;
-    // Removido: private ImageView arrowIcon = new ImageView(); // Não está no FXML e não é usado
     
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;  
@@ -62,40 +61,24 @@ public class HorasTrabalhadasController implements Initializable {
     
     private boolean sidebarVisible = false;
     private String emailUsuarioLogado;
-    // CORREÇÃO: Usando a classe de serviço, não o modelo
+    private String userEmail, userPermission;
     private HorasTrabalhadas horasTrabalhadasService = new HorasTrabalhadas(); 
 
-    public void initData(String email) {
-        this.emailUsuarioLogado = email;
-        System.out.println("HorasTrabalhadasController: Email do usuário recebido: " + emailUsuarioLogado);
+    public void initData(String email, String role) {
+        this.userEmail = email;
+        this.userPermission = role;
+        System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
         
-        // CORREÇÃO: Definir valores padrão dos DatePickers aqui, após o email ser definido
-        if (startDatePicker != null) {
-            startDatePicker.setValue(LocalDate.now().minusMonths(1)); // Padrão: último mês
-        }
-        if (endDatePicker != null) {
-            endDatePicker.setValue(LocalDate.now()); // Padrão: hoje
-        }
-        
-        carregarMarcacoesFiltradas();
+        updateSidebarVisibility(); 
     }
-
+    
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("HorasTrabalhadasController: Inicializado.");
+        System.out.println("ConfiguraçõesController: Inicializado.");
+        
+        botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
 
-        // Opcional: Apenas para garantir que os DatePickers não iniciem com valores nulos
-        // caso initData() não seja chamado imediatamente após a inicialização.
-        // No entanto, como initData() chamará carregarMarcacoesFiltradas,
-        // a definição das datas lá é suficiente.
-        // Se você não tiver um método initData() ou ele for opcional, descomente as linhas abaixo.
-        // if (startDatePicker != null && startDatePicker.getValue() == null) {
-        //     startDatePicker.setValue(LocalDate.now().minusMonths(1));
-        // }
-        // if (endDatePicker != null && endDatePicker.getValue() == null) {
-        //     endDatePicker.setValue(LocalDate.now());
-        // }
-
+        overlayPane.setOnMouseClicked(this::handleOverlayClick);
 
         if (overlayPane != null) {
             overlayPane.setVisible(false);
@@ -104,6 +87,13 @@ public class HorasTrabalhadasController implements Initializable {
 
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false); 
+        }
+        if (sidebarAdminPane != null) {
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
         }
 
         if (botaoMenu != null) {
@@ -112,9 +102,58 @@ public class HorasTrabalhadasController implements Initializable {
         if (overlayPane != null) {
             overlayPane.setOnMouseClicked(this::handleOverlayClick);
         }
-        if (vboxMarcacoesPorDia != null) {
-            vboxMarcacoesPorDia.setStyle("-fx-background-color: transparent;");
+    }
+
+    private void updateSidebarVisibility() {
+        
+        boolean isAdmin = "admin".equalsIgnoreCase(userPermission);
+
+        if (isAdmin) {
+            sidebarAdminPane.setVisible(true);
+            sidebarAdminPane.setManaged(true);
+         
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
+        } else {
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
+            
+            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
         }
+    }
+
+    private AnchorPane getActiveSidebarPane() {
+        
+        return "admin".equalsIgnoreCase(userPermission) ? sidebarAdminPane : sidebarPane;
+    }
+        
+    private void handleMenuButtonClick(MouseEvent event) {
+    	System.out.println("handleMenuButtonClick: Botão de menu clicado em HorasTrabalhadas!");
+        AnchorPane activeSidebar = getActiveSidebarPane();
+
+        if (overlayPane != null) {
+            overlayPane.setVisible(true);
+            overlayPane.setMouseTransparent(false);
+            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeTransition.setFromValue(overlayPane.getOpacity());
+            fadeTransition.setToValue(0.4);
+            fadeTransition.play();
+        }
+
+        if (activeSidebar != null) { 
+            
+            activeSidebar.setVisible(true);
+            activeSidebar.setManaged(true); 
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
+            translateTransition.setToX(0);
+            translateTransition.play();
+        }
+        sidebarVisible = true;
     }
 
     @FXML
@@ -341,26 +380,6 @@ public class HorasTrabalhadasController implements Initializable {
                 }
             });
     }
-  
-    private void handleMenuButtonClick(MouseEvent event) {
-    	System.out.println("handleMenuButtonClick: Botão de menu clicado em HorasTrabalhadas!");
-        if (overlayPane != null) {
-            overlayPane.setVisible(true);
-            overlayPane.setMouseTransparent(false); 
-            FadeTransition fadeTransition = new FadeTransition(javafx.util.Duration.seconds(0.3), overlayPane); 
-            fadeTransition.setFromValue(overlayPane.getOpacity());
-            fadeTransition.setToValue(0.4);
-            fadeTransition.play();
-        }
-
-        if (sidebarPane != null) {
-            sidebarPane.setMouseTransparent(false);
-            TranslateTransition translateTransition = new TranslateTransition(javafx.util.Duration.seconds(0.3), sidebarPane);
-            translateTransition.setToX(0); 
-            translateTransition.play();
-        }
-        sidebarVisible = true;
-    }
 
     private void handleOverlayClick(MouseEvent event) {
         closeSidebar();
@@ -395,9 +414,6 @@ public class HorasTrabalhadasController implements Initializable {
     private void handleConsultarHoras(ActionEvent event) {
         System.out.println("Clicou em Consultar Horas Trabalhadas (já nesta tela).");
         closeSidebar();
-        // Não é necessário chamar carregarMarcacoesFiltradas() novamente aqui,
-        // pois a tela já está exibindo os dados filtrados.
-        // Se a intenção era recarregar com o filtro atual, a linha abaixo é ok.
         carregarMarcacoesFiltradas(); 
     }
 
@@ -411,7 +427,7 @@ public class HorasTrabalhadasController implements Initializable {
 
             MenuUserController controller = loader.getController();
             if (controller != null) {
-                controller.setUserEmail(emailUsuarioLogado);
+                controller.initData(userEmail, userPermission);
             } else {
                 System.err.println("Erro: Controlador de MenuUser é nulo ao voltar.");
             }
@@ -437,7 +453,7 @@ public class HorasTrabalhadasController implements Initializable {
 
             ConfiguracoesController controller = loader.getController();
             if (controller != null) {
-                controller.initData(emailUsuarioLogado);
+                controller.initData(userEmail, userPermission);
             } else {
                 System.err.println("Erro: Controlador de Configurações é nulo ao voltar."); // Correção de mensagem
             }

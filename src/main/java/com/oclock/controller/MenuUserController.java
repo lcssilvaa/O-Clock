@@ -35,25 +35,25 @@ public class MenuUserController implements Initializable {
 
     @FXML
     private ImageView baterPonto, botaoMenu;
-    
+
     @FXML
     private AnchorPane overlayPane;
     @FXML
     private AnchorPane sidebarPane;
     @FXML
     private AnchorPane sidebarAdminPane;
-   
+
     private Timeline timeline;
     private String userEmail, userPermission;
     private BaterPonto baterPontoService = new BaterPonto();
 
     private boolean sidebarVisible = false;
-    
+
     public void initData(String email, String role) {
         this.userEmail = email;
         this.userPermission = role;
         System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
-
+        updateSidebarVisibility();
     }
 
     @Override
@@ -61,16 +61,24 @@ public class MenuUserController implements Initializable {
         overlayPane.setVisible(false);
         overlayPane.setOpacity(0.0);
 
-        sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+        if (sidebarPane != null) {
+            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
+        }
+        if (sidebarAdminPane != null) {
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+        }
 
         botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
-
         overlayPane.setOnMouseClicked(this::handleOverlayClick);
-    	
+
         if (relogioLabel != null) {
             iniciarRelogio();
         }
-        
+
         if (baterPonto != null) {
             baterPonto.setOnMouseClicked(this::MarcarPontoClick);
         }
@@ -80,62 +88,73 @@ public class MenuUserController implements Initializable {
             mensagemPonto.setManaged(false);
         }
     }
-    
-    public void configureSidebarForRole() {
-        if (sidebarPane == null || sidebarAdminPane == null) {
-            System.err.println("Erro: Painéis de conteúdo do sidebar FXML não injetados em MenuUserController.");
-            return; 
-        }
 
-        if (userPermission == null) {
-            System.err.println("Erro: Role do usuário não definida em MenuUserController para configurar sidebar.");
-           
-            sidebarPane.setVisible(true);
-            sidebarAdminPane.setVisible(false);
+    private void updateSidebarVisibility() {
+        if (sidebarPane == null || sidebarAdminPane == null) {
+            System.err.println("Erro: Painéis do sidebar FXML não injetados em MenuUserController.");
             return;
         }
 
-        switch (userPermission.toUpperCase()) {
-            case "ADMIN":
-            	sidebarAdminPane.setVisible(true);
-                sidebarPane.setVisible(false);
-                break;
-            case "USUARIO":
-            	sidebarPane.setVisible(true);
-            	sidebarAdminPane.setVisible(false);
-                break;
-            default:
-                System.err.println("Role desconhecida: " + userPermission + ". Nenhum sidebar de conteúdo exibido.");
-                sidebarPane.setVisible(false);
-                sidebarAdminPane.setVisible(false);
-                break;
+        if (userPermission == null) {
+            System.err.println("Erro: Permissão do usuário não definida em MenuUserController para configurar sidebar.");
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+            return;
+        }
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
+
+        if (isAdmin) {
+            sidebarAdminPane.setVisible(true);
+            sidebarAdminPane.setManaged(true);
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
+        } else {
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
+            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
         }
     }
-    public void setUserEmail(String useremail) {
-        this.userEmail = useremail;
-        System.out.println("Email do usuário logado recebido no MenuUserController: " + userEmail);
+
+    private AnchorPane getActiveSidebarPane() {
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
+        return isAdmin ? sidebarAdminPane : sidebarPane;
     }
 
     private void handleMenuButtonClick(MouseEvent event) {
-    	
-    	System.out.println("handleMenuButtonClick: Botão de menu clicado!");
+        System.out.println("handleMenuButtonClick: Botão de menu clicado!");
+        AnchorPane activeSidebar = getActiveSidebarPane();
+
         overlayPane.setVisible(true);
         FadeTransition fadeTransition1 = new FadeTransition(Duration.seconds(0.3), overlayPane);
         fadeTransition1.setFromValue(overlayPane.getOpacity());
         fadeTransition1.setToValue(0.4);
         fadeTransition1.play();
 
-        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-        translateTransition1.setToX(0);
-        translateTransition1.play();
+        if (activeSidebar != null) {
+            activeSidebar.setVisible(true);
+            activeSidebar.setManaged(true);
+            TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
+            translateTransition1.setToX(0);
+            translateTransition1.play();
+        }
         sidebarVisible = true;
     }
 
     private void handleOverlayClick(MouseEvent event) {
         closeSidebar();
     }
-    
+
     private void closeSidebar() {
+        AnchorPane activeSidebar = getActiveSidebarPane();
+
         FadeTransition fadeTransition1 = new FadeTransition(Duration.seconds(0.3), overlayPane);
         fadeTransition1.setFromValue(overlayPane.getOpacity());
         fadeTransition1.setToValue(0);
@@ -144,9 +163,15 @@ public class MenuUserController implements Initializable {
             overlayPane.setVisible(false);
         });
 
-        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-        translateTransition1.setToX(-sidebarPane.getPrefWidth());
-        translateTransition1.play();
+        if (activeSidebar != null) {
+            TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
+            translateTransition1.setToX(-activeSidebar.getPrefWidth());
+            translateTransition1.play();
+            translateTransition1.setOnFinished(event -> {
+                activeSidebar.setVisible(false);
+                activeSidebar.setManaged(false);
+            });
+        }
         sidebarVisible = false;
     }
 
@@ -206,7 +231,7 @@ public class MenuUserController implements Initializable {
             hideMessageTimer.play();
         }
     }
-    	
+
     private void iniciarRelogio() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -242,73 +267,74 @@ public class MenuUserController implements Initializable {
             e.printStackTrace();
         }
     }
-@FXML
-private void ListarHorasButtonAction(ActionEvent event) {
-    System.out.println("Clicou em Registro de Ponto");
-    closeSidebar();
 
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/RegistrosPonto.fxml"));
-        Parent root = loader.load();
+    @FXML
+    private void ListarHorasButtonAction(ActionEvent event) {
+        System.out.println("Clicou em Registro de Ponto");
+        closeSidebar();
 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/RegistrosPonto.fxml"));
+            Parent root = loader.load();
 
-        HorasTrabalhadasController registroController = loader.getController();
-        if (registroController != null) {
-            registroController.initData(userEmail);
-        } else {
-            System.err.println("Erro: Controlador da RegistroPonto.fxml não encontrado.");
+            HorasTrabalhadasController registroController = loader.getController();
+            if (registroController != null) {
+                registroController.initData(userEmail, userPermission);
+            } else {
+                System.err.println("Erro: Controlador da RegistroPonto.fxml não encontrado.");
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("OnClock - Registro de Ponto");
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar RegistroPonto.fxml: " + e.getMessage());
+            e.printStackTrace();
         }
-
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("OnClock - Registro de Ponto");
-        stage.show();
-
-    } catch (IOException e) {
-        System.err.println("Erro ao carregar RegistroPonto.fxml: " + e.getMessage());
-        e.printStackTrace();
     }
-  }
 
-@FXML
-private void handleConfiguracoes(ActionEvent event) {
-	System.out.println("Clicou em Configurações");
-    closeSidebar();
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/Configuracoes.fxml"));
-        Parent root = loader.load();
+    @FXML
+    private void handleConfiguracoes(ActionEvent event) {
+        System.out.println("Clicou em Configurações");
+        closeSidebar();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/Configuracoes.fxml"));
+            Parent root = loader.load();
 
-        ConfiguracoesController controller = loader.getController();
-        if (controller != null) {
-            controller.initData(userEmail);
+            ConfiguracoesController controller = loader.getController();
+            if (controller != null) {
+                controller.initData(userEmail, userPermission);
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("OnClock - Configurações");
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar Configurações.fxml para registrar marcação: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("OnClock - Configurações");
-        stage.show();
-    } catch (IOException e) {
-        System.err.println("Erro ao carregar Configurações.fxml para registrar marcação: " + e.getMessage());
-        e.printStackTrace();
     }
-  }
-@FXML
-private void GestaoButtonAction(ActionEvent event) {
-	System.out.println("Teste");
-	closeSidebar();
-	}
 
-@FXML
-private void CadastrarButtonAction(ActionEvent event) {
-	System.out.println("Teste");
-	closeSidebar();
-	}
-@FXML
-private void RelatorioButtonAction(ActionEvent event) {
-	System.out.println("Teste");
-	closeSidebar();
-	}
+    @FXML
+    private void GestaoButtonAction(ActionEvent event) {
+        System.out.println("Teste");
+        closeSidebar();
+    }
+
+    @FXML
+    private void CadastrarButtonAction(ActionEvent event) {
+        System.out.println("Teste");
+        closeSidebar();
+    }
+
+    @FXML
+    private void RelatorioButtonAction(ActionEvent event) {
+        System.out.println("Teste");
+        closeSidebar();
+    }
 }

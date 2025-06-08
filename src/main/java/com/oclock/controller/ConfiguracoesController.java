@@ -32,26 +32,34 @@ import java.util.ResourceBundle;
 
 public class ConfiguracoesController implements Initializable {
 
-  
-    @FXML
+	@FXML
     private AnchorPane overlayPane;
     @FXML
     private AnchorPane sidebarPane;
     @FXML
+    private AnchorPane sidebarAdminPane; 
+    @FXML
     private ImageView botaoMenu;
 
+    private String userEmail, userPermission;
     private boolean sidebarVisible = false;
-
     private String emailUsuarioLogado;
 
-    public void initData(String email) {
-        this.emailUsuarioLogado = email;
-        System.out.println("Email do usuário recebido: " + emailUsuarioLogado);
+    public void initData(String email, String role) {
+        this.userEmail = email;
+        this.userPermission = role;
+        System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
+        
+        updateSidebarVisibility(); 
     }
-
+    
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("ConfiguraçõesController: Inicializado.");
+        
+        botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
+
+        overlayPane.setOnMouseClicked(this::handleOverlayClick);
 
         if (overlayPane != null) {
             overlayPane.setVisible(false);
@@ -60,6 +68,13 @@ public class ConfiguracoesController implements Initializable {
 
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false); 
+        }
+        if (sidebarAdminPane != null) {
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
         }
 
         if (botaoMenu != null) {
@@ -68,24 +83,55 @@ public class ConfiguracoesController implements Initializable {
         if (overlayPane != null) {
             overlayPane.setOnMouseClicked(this::handleOverlayClick);
         }
-       
-    }   
+    }
+
+    private void updateSidebarVisibility() {
+        
+        boolean isAdmin = "admin".equalsIgnoreCase(userPermission);
+
+        if (isAdmin) {
+            sidebarAdminPane.setVisible(true);
+            sidebarAdminPane.setManaged(true);
+         
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
+        } else {
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
+            
+            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+        }
+    }
+
+    private AnchorPane getActiveSidebarPane() {
+        
+        return "admin".equalsIgnoreCase(userPermission) ? sidebarAdminPane : sidebarPane;
+    }
         
     private void handleMenuButtonClick(MouseEvent event) {
     	System.out.println("handleMenuButtonClick: Botão de menu clicado em HorasTrabalhadas!");
+        AnchorPane activeSidebar = getActiveSidebarPane();
+
         if (overlayPane != null) {
             overlayPane.setVisible(true);
-            overlayPane.setMouseTransparent(false); // Torna o overlay interativo para que possa ser clicado
-            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane); // Define a duração e o nó
+            overlayPane.setMouseTransparent(false);
+            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane);
             fadeTransition.setFromValue(overlayPane.getOpacity());
             fadeTransition.setToValue(0.4);
             fadeTransition.play();
         }
 
-        if (sidebarPane != null) {
-            sidebarPane.setMouseTransparent(false); // Torna o sidebar interativo
-            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), sidebarPane); // Define a duração e o nó
-            translateTransition.setToX(0); // Move para a posição visível
+        if (activeSidebar != null) { 
+            
+            activeSidebar.setVisible(true);
+            activeSidebar.setManaged(true); 
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
+            translateTransition.setToX(0);
             translateTransition.play();
         }
         sidebarVisible = true;
@@ -97,7 +143,7 @@ public class ConfiguracoesController implements Initializable {
 
     private void closeSidebar() {
     	if (overlayPane != null) {
-            // Use javafx.util.Duration explicitamente aqui
+            
             FadeTransition fadeTransition = new FadeTransition(javafx.util.Duration.seconds(0.3), overlayPane);
             fadeTransition.setFromValue(overlayPane.getOpacity());
             fadeTransition.setToValue(0);
@@ -130,7 +176,7 @@ public class ConfiguracoesController implements Initializable {
 
             HorasTrabalhadasController controller = loader.getController();
             if (controller != null) {
-                controller.initData(emailUsuarioLogado);
+                controller.initData(userEmail, userPermission);
             } else {
                 System.err.println("Erro: Consultar Horas é nulo ao voltar.");
             }
@@ -156,7 +202,7 @@ public class ConfiguracoesController implements Initializable {
 
             MenuUserController controller = loader.getController();
             if (controller != null) {
-                controller.setUserEmail(emailUsuarioLogado);
+                controller.initData(userEmail, userPermission);
             }
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

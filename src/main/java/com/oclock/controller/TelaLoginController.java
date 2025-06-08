@@ -76,18 +76,12 @@ public class TelaLoginController {
                     controllerInstance = loader.getController();
 
                     if (controllerInstance != null) {
-                        if ("admin".equalsIgnoreCase(permission)) {
-                             if (controllerInstance instanceof MenuUserController) {
-                                 MenuUserController menuUserController = (MenuUserController) controllerInstance;
-                                 menuUserController.initData(email, permission);
-                                 menuUserController.configureSidebarForRole();
-                             }
-                        } else if ("usuario".equalsIgnoreCase(permission)) {
-                            if (controllerInstance instanceof MenuUserController) {
-                                MenuUserController menuUserController = (MenuUserController) controllerInstance;
-                                menuUserController.initData(email, permission);
-                                menuUserController.configureSidebarForRole();
-                            }
+                        if (controllerInstance instanceof MenuUserController) {
+                            MenuUserController menuUserController = (MenuUserController) controllerInstance;
+                            menuUserController.initData(email, permission);
+                        } else if (controllerInstance instanceof CadastroController) {
+                            CadastroController cadastroController = (CadastroController) controllerInstance;
+                            cadastroController.initData(email, permission);
                         }
                     }
                     Scene scene = new Scene(root);
