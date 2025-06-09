@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" style="-fx-background-color: #123057;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.TelaLoginController">
+<AnchorPane fx:id="mainContentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" style="-fx-background-color: #123057;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.CadastroController">
    <stylesheets>
       <URL value="@/com/oclock/css/style.css" />
       </stylesheets>
@@ -29,12 +29,12 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Text>
-      <CheckBox fx:id="userUsuarioCheck" layoutX="67.0" layoutY="400.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="62.0" text="Usuário" textFill="WHITE">
+      <CheckBox fx:id="userUsuarioCheck" layoutX="67.0" layoutY="422.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="62.0" text="Usuário" textFill="WHITE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
       </CheckBox>
-      <CheckBox fx:id="userAdminCheck" layoutX="168.0" layoutY="394.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="97.0" text="Administrador" textFill="WHITE">
+      <CheckBox fx:id="userAdminCheck" layoutX="168.0" layoutY="433.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="97.0" text="Administrador" textFill="WHITE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -75,8 +75,8 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="25.0" minHeight="2.0" prefHeight="2.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="58.0" minHeight="10.0" prefHeight="58.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <TextField fx:id="campoNome" prefHeight="49.0" prefWidth="220.0" promptText="Nome" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="1">
@@ -87,7 +87,7 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <TextField fx:id="campoEmail" prefHeight="49.0" prefWidth="220.0" promptText="Email" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="2">
+            <TextField fx:id="campoEmail" prefHeight="49.0" prefWidth="220.0" promptText="E-mail" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="2">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -95,7 +95,12 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <PasswordField fx:id="campoSenha" prefHeight="49.0" prefWidth="220.0" promptText="Senha" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="3">
+            <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUserButtonAction" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <PasswordField fx:id="campoSenha" prefHeight="49.0" prefWidth="220.0" promptText="Senha" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="4">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -103,11 +108,14 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </PasswordField>
-            <Button fx:id="botaoLogin1" mnemonicParsing="false" onAction="#LoginButtonAction" prefHeight="30.0" prefWidth="79.0" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+            <TextField fx:id="campoCPF" promptText="CPF" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="3">
                <cursor>
-                  <Cursor fx:constant="HAND" />
+                  <Cursor fx:constant="TEXT" />
                </cursor>
-            </Button>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </TextField>
          </children>
       </GridPane>
       <ImageView fitHeight="121.0" fitWidth="126.0" layoutX="107.0" layoutY="109.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="370.0" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="109.0">
@@ -115,6 +123,7 @@
             <Image url="@../Desktop/Faculdade/Repositórios/OClockFX/src/main/resources/com/oclock/images/cadastro.png" />
          </image>
       </ImageView>
+      <AnchorPane fx:id="overlayPane" prefHeight="609.0" prefWidth="335.0" style="-fx-background-color: #000000;" />
 
       <AnchorPane fx:id="sidebarPane" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>

@@ -247,9 +247,28 @@ private void GestaoButtonAction(ActionEvent event) {
 
 @FXML
 private void CadastrarButtonAction(ActionEvent event) {
-	System.out.println("Teste");
-	closeSidebar();
-	}
+	System.out.println("Clicou em Cadastro");
+    closeSidebar();
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/TelaCadastro.fxml"));
+        Parent root = loader.load();
+
+        ConfiguracoesController controller = loader.getController();
+        if (controller != null) {
+            controller.initData(userEmail, userPermission);
+        }
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("OnClock - Cadastro de Usuários");
+        stage.show();
+    } catch (IOException e) {
+        System.err.println("Erro ao carregar TelaCadastro.fxml para registrar marcação: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
 @FXML
 private void RelatorioButtonAction(ActionEvent event) {
 	System.out.println("Teste");
