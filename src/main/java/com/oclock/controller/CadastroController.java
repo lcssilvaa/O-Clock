@@ -22,8 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
-
-import java.awt.Button;
+import javafx.scene.control.Button;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -59,8 +58,6 @@ public class CadastroController implements Initializable {
     private CheckBox userUsuarioCheck;
     @FXML
     private CheckBox userAdminCheck;
-    @FXML
-    private Button btnCadastrar; 
     @FXML
     private Label mensagemErro;
 
@@ -246,7 +243,7 @@ public class CadastroController implements Initializable {
     }
 
     @FXML
-    private void SairButtonAction(ActionEvent event) {
+    private void handleSair(ActionEvent event) {
         System.out.println("Clicou em Sair");
         closeSidebar();
         try {
@@ -264,7 +261,7 @@ public class CadastroController implements Initializable {
     }
 
     @FXML
-    private void ListarHorasButtonAction(ActionEvent event) {
+    private void handleConsultarHoras(ActionEvent event) {
         System.out.println("Clicou em Registro de Ponto");
         closeSidebar();
 
@@ -316,12 +313,13 @@ public class CadastroController implements Initializable {
     }
 
     @FXML
-    private void GestaoButtonAction(ActionEvent event) {
+    private void handleGestao(ActionEvent event) {
         System.out.println("Teste");
         closeSidebar();
     }
 
-    private void btnCadastrarButtonAction(ActionEvent event) {
+    @FXML
+    private void cadastrarUsuario(ActionEvent event) {
        
         if (campoNome == null || campoEmail == null || campoSenha == null || campoCPF == null ||
             userUsuarioCheck == null || userAdminCheck == null || mensagemErro == null) {
@@ -427,9 +425,16 @@ public class CadastroController implements Initializable {
             mensagemErro.setManaged(false);
         }
     }
+    
+    @FXML
+    private void handleCadastrar(ActionEvent event) {
+        System.out.println("Clicou em Consultar Horas Trabalhadas (já nesta tela).");
+        closeSidebar();
+ 
+    }
 
     @FXML
-    private void RelatorioButtonAction(ActionEvent event) {
+    private void handleRelatorio(ActionEvent event) {
         System.out.println("Teste");
         closeSidebar();
     }

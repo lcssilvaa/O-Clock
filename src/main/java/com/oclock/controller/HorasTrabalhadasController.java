@@ -472,19 +472,37 @@ public class HorasTrabalhadasController implements Initializable {
     }
 
     @FXML
-    private void GestaoButtonAction(ActionEvent event) {
+    private void handleGestao(ActionEvent event) {
         System.out.println("Teste");
         closeSidebar();
     }
 
     @FXML
-    private void CadastrarButtonAction(ActionEvent event) {
-        System.out.println("Teste");
+    private void handleCadastrar(ActionEvent event) {
+    	System.out.println("Clicou em Cadastro");
         closeSidebar();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/TelaCadastro.fxml"));
+            Parent root = loader.load();
+
+            CadastroController controller = loader.getController();
+            if (controller != null) {
+                controller.initData(userEmail, userPermission);
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("OnClock - Cadastro de Usuários");
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar TelaCadastro.fxml para registrar marcação: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    private void RelatorioButtonAction(ActionEvent event) {
+    private void handleRelatorio(ActionEvent event) {
         System.out.println("Teste");
         closeSidebar();
     }

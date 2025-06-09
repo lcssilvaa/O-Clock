@@ -240,20 +240,20 @@ public class ConfiguracoesController implements Initializable {
     }
 
 @FXML
-private void GestaoButtonAction(ActionEvent event) {
+private void handleGestao(ActionEvent event) {
 	System.out.println("Teste");
 	closeSidebar();
 	}
 
 @FXML
-private void CadastrarButtonAction(ActionEvent event) {
+private void handleCadastrar(ActionEvent event) {
 	System.out.println("Clicou em Cadastro");
     closeSidebar();
     try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/TelaCadastro.fxml"));
         Parent root = loader.load();
 
-        ConfiguracoesController controller = loader.getController();
+        CadastroController controller = loader.getController();
         if (controller != null) {
             controller.initData(userEmail, userPermission);
         }
@@ -270,7 +270,7 @@ private void CadastrarButtonAction(ActionEvent event) {
 }
 
 @FXML
-private void RelatorioButtonAction(ActionEvent event) {
+private void handleRelatorio(ActionEvent event) {
 	System.out.println("Teste");
 	closeSidebar();
 	}
