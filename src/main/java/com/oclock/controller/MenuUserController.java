@@ -58,8 +58,14 @@ public class MenuUserController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        overlayPane.setVisible(false);
-        overlayPane.setOpacity(0.0);
+    	if (overlayPane != null) {
+            overlayPane.setVisible(false);
+            overlayPane.setOpacity(0.0);
+            overlayPane.setOnMouseClicked(this::handleOverlayClick);
+            System.out.println("DEBUG: overlayPane configurado.");
+        } else {
+            System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
+        }
 
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
@@ -70,6 +76,7 @@ public class MenuUserController implements Initializable {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
+            System.out.println("DEBUG (MenuUserController): sidebarAdminPane inicializado (largura: " + sidebarAdminPane.getPrefWidth() + ").");
         }
 
         botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
@@ -105,22 +112,21 @@ public class MenuUserController implements Initializable {
         }
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
+        System.out.println("DEBUG: É Admin? " + isAdmin);
 
         if (isAdmin) {
+        	System.out.println("DEBUG: Ativando sidebarAdminPane.");
             sidebarAdminPane.setVisible(true);
-            sidebarAdminPane.setManaged(true);
-            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setManaged(true);;
 
             sidebarPane.setVisible(false);
             sidebarPane.setManaged(false);
         } else {
+        	System.out.println("DEBUG: Ativando sidebarPane.");
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
-
-            sidebarPane.setVisible(true);
-            sidebarPane.setManaged(true);
-            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
         }
+        System.out.println("DEBUG: updateSidebarVisibility() finalizado.");
     }
 
     private AnchorPane getActiveSidebarPane() {
@@ -129,23 +135,53 @@ public class MenuUserController implements Initializable {
     }
 
     private void handleMenuButtonClick(MouseEvent event) {
-        System.out.println("handleMenuButtonClick: Botão de menu clicado!");
+    	System.out.println("--- handleMenuButtonClick: INÍCIO ---");
+        System.out.println("DEBUG (handleMenuButtonClick): Botão de menu clicado!");
+        
         AnchorPane activeSidebar = getActiveSidebarPane();
 
-        overlayPane.setVisible(true);
-        FadeTransition fadeTransition1 = new FadeTransition(Duration.seconds(0.3), overlayPane);
-        fadeTransition1.setFromValue(overlayPane.getOpacity());
-        fadeTransition1.setToValue(0.4);
-        fadeTransition1.play();
-
-        if (activeSidebar != null) {
-            activeSidebar.setVisible(true);
-            activeSidebar.setManaged(true);
-            TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
-            translateTransition1.setToX(0);
-            translateTransition1.play();
+        if (activeSidebar == null) {
+            System.err.println("ERRO (handleMenuButtonClick): activeSidebar é NULO APÓS getActiveSidebarPane(). Abortando animação.");
+            return; 
         }
+
+        System.out.println("DEBUG: activeSidebar detectado: " + (activeSidebar == sidebarAdminPane ? "sidebarAdminPane" : "sidebarPane"));
+        System.out.println("DEBUG: Propriedades INICIAIS do activeSidebar antes da animação:");
+        System.out.println("   Visible: " + activeSidebar.isVisible());
+        System.out.println("   Managed: " + activeSidebar.isManaged());
+        System.out.println("   TranslateX: " + activeSidebar.getTranslateX());
+
+        if (overlayPane != null) {
+            overlayPane.setVisible(true);
+            overlayPane.setMouseTransparent(false); 
+            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeTransition.setFromValue(overlayPane.getOpacity());
+            fadeTransition.setToValue(0.4);
+            fadeTransition.play();
+            System.out.println("DEBUG (handleMenuButtonClick): Animação do overlay iniciada.");
+        } else {
+            System.err.println("ERRO (handleMenuButtonClick): overlayPane é NULO. Animação do overlay falhou.");
+        }
+
+        activeSidebar.setVisible(true); 
+        activeSidebar.setManaged(true);
+        System.out.println("DEBUG (handleMenuButtonClick): activeSidebar definido como Visible=true, Managed=true.");
+
+        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
+        translateTransition.setToX(0);
+        translateTransition.play();
+        
+        translateTransition.setOnFinished(e -> {
+            System.out.println("DEBUG (handleMenuButtonClick): Animação da sidebar CONCLUÍDA.");
+            System.out.println("DEBUG (handleMenuButtonClick): Propriedades FINAIS do activeSidebar APÓS ANIMAÇÃO:");
+            System.out.println("   Visible: " + activeSidebar.isVisible());
+            System.out.println("   Managed: " + activeSidebar.isManaged());
+            System.out.println("   TranslateX: " + activeSidebar.getTranslateX());
+        });
+        
+        System.out.println("DEBUG (handleMenuButtonClick): Animação da sidebar INICIADA.");
         sidebarVisible = true;
+        System.out.println("--- handleMenuButtonClick: FIM ---");
     }
 
     private void handleOverlayClick(MouseEvent event) {

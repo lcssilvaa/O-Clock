@@ -56,7 +56,7 @@ public class TelaLoginController {
                 Object controllerInstance = null;
 
                 if ("admin".equalsIgnoreCase(permission)) {
-                    loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuAdmin.fxml"));
+                    loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuUser.fxml"));
                     stage.setTitle("OnClock - Administrador");
                 } else if ("usuario".equalsIgnoreCase(permission)) {
                     loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuUser.fxml"));

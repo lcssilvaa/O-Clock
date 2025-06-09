@@ -67,8 +67,7 @@ public class HorasTrabalhadas {
             System.err.println("ID de usuário inválido após consulta para buscar registros.");
             return registrosDiarios;
         }
-
-        // 2. Buscar todos os pontos para este id_usuario, ordenados por data e hora
+        
         String selectPointsSql = "SELECT data_hora_registro FROM REGISTROS_PONTO WHERE id_usuario = ? ORDER BY data_hora_registro ASC";
         try (Connection conn = Conexao.conectar();
              PreparedStatement pstmt = conn.prepareStatement(selectPointsSql)) {
@@ -102,11 +101,11 @@ public class HorasTrabalhadas {
             LocalDateTime saida = null;
 
             if (!pontosDoDia.isEmpty()) {
-                entrada = pontosDoDia.get(0); // Primeiro ponto do dia é a entrada
+                entrada = pontosDoDia.get(0); 
             }
 
             if (pontosDoDia.size() > 1) {
-                saida = pontosDoDia.get(pontosDoDia.size() - 1); // Último ponto do dia é a saída
+                saida = pontosDoDia.get(pontosDoDia.size() - 1); 
             } else if (pontosDoDia.size() == 1) {
                 saida = null; 
             }
