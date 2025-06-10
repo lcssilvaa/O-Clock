@@ -1,5 +1,6 @@
 package com.oclock.controller;
 
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView; 
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.Node;
 
 import java.io.IOException;
@@ -39,8 +41,9 @@ public class RedefinirSenhaController {
 
     @FXML
     private void RedefinirSenhaButtonAction(ActionEvent event) {
-        mensagemFeedback.setText("");
+    	mensagemFeedback.setText("");
         mensagemFeedback.setStyle("-fx-text-fill: red;");
+        mensagemFeedback.setVisible(true);
 
         String email = campoEmail.getText();
         String senhaAtual = campoSenhaAtual.getText();
@@ -92,7 +95,9 @@ public class RedefinirSenhaController {
             campoSenhaAtual.clear();
             campoNovaSenha.clear();
             
-            voltarParaLogin(event);
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(e -> voltarParaLogin(event));
+            pause.play();
       
         } else {
             mensagemFeedback.setText("Erro ao redefinir a senha. Tente novamente.");

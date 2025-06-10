@@ -18,7 +18,6 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.RedefinirSenhaController">
    <children>
-      <Label fx:id="mensagemFeedback" layoutX="96.0" layoutY="410.0" managed="false" text="Error" textFill="#aad7ff" visible="false" />
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="335.0" style="-fx-background-color: #123057;" stylesheets="@/com/oclock/css/Login.css">
          <children>
             <ImageView fitHeight="88.0" fitWidth="102.0" layoutX="122.0" layoutY="102.0" pickOnBounds="true" preserveRatio="true">
@@ -35,6 +34,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
@@ -66,11 +66,16 @@
                         <Font name="System Bold" size="20.0" />
                      </font>
                   </Text>
-                  <Button fx:id="botaoRedefinirSenha" mnemonicParsing="false" onAction="#RedefinirSenhaButtonAction" prefHeight="30.0" prefWidth="90.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+                  <Button fx:id="botaoRedefinirSenha" mnemonicParsing="false" onAction="#RedefinirSenhaButtonAction" prefHeight="30.0" prefWidth="90.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="7">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Label fx:id="mensagemFeedback" prefHeight="45.0" prefWidth="215.0" text="Label" textFill="TRANSPARENT" GridPane.rowIndex="5">
+                     <font>
+                        <Font size="10.5" />
+                     </font>
+                  </Label>
                </children>
             </GridPane>
             </children>
@@ -82,7 +87,7 @@
                   <Image url="@/com/oclock/images/Logo.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="voltarLogin" fitHeight="30.0" fitWidth="33.0" layoutX="284.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#imagemVoltarLoginClick">
+            <ImageView fx:id="voltarLogin" fitHeight="30.0" fitWidth="33.0" layoutX="284.0" layoutY="14.0" onMouseClicked="#imagemVoltarLoginClick" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@/com/oclock/images/voltar.png" />
                </image>
