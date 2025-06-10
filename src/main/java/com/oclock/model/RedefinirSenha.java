@@ -28,7 +28,7 @@ public class RedefinirSenha {
             con = DriverManager.getConnection(url, usuarioDB, senhaDB);
             System.out.println("DEBUG: Conexão com o banco estabelecida.");
 
-            String sql = "UPDATE usuarios SET senha = ? WHERE email = ?";
+            String sql = "UPDATE usuarios SET senha_hash = ? WHERE email = ?";
             stmt = con.prepareStatement(sql);
 
             stmt.setString(1, novaSenhaHash);
