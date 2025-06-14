@@ -2,7 +2,9 @@ package com.oclock.model;
 
 import com.oclock.controller.HorasTrabalhadasController; 
 import com.oclock.controller.MenuUserController;
+import com.oclock.controller.RelatoriosController;
 import com.oclock.controller.ConfiguracoesController;
+import com.oclock.controller.GerenciarUsuariosController;
 import com.oclock.controller.CadastroController;
 
 import javafx.fxml.FXMLLoader;

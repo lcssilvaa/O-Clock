@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import com.oclock.model.BaterPonto;
+import com.oclock.model.ScreenManager;
 
 public class MenuUserController implements Initializable {
 
@@ -394,7 +395,7 @@ public class MenuUserController implements Initializable {
 
     @FXML
     private void handleRelatorio(ActionEvent event) {
-        System.out.println("Teste");
         closeSidebar();
+        ScreenManager.loadScreen((Node) event.getSource(), "Relatorios.fxml", userEmail, userPermission);
     }
 }

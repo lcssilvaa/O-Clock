@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
@@ -258,8 +259,8 @@ public class HorasTrabalhadasController implements Initializable {
             .sorted(Comparator.comparing(RegistroDiario::getData, Comparator.reverseOrder()))
             .forEach(registroDiario -> {
                 LocalDate data = registroDiario.getData();
-                LocalDateTime entrada = registroDiario.getEntrada();
-                LocalDateTime saida = registroDiario.getSaida();
+                LocalTime entrada = registroDiario.getEntrada();
+                LocalTime saida = registroDiario.getSaida();
                 String horasTrabalhadasFormatadas = registroDiario.getHorasTrabalhadas();
 
                 VBox dailyContainer = new VBox(5);
