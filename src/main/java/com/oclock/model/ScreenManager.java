@@ -20,7 +20,12 @@ public class ScreenManager {
             Parent root = loader.load();
 
             Object controller = loader.getController();
-            if (controller instanceof HorasTrabalhadasController) {
+            if (controller instanceof RelatoriosController) {
+                ((RelatoriosController) controller).initData(email, permission);
+            } else if (controller instanceof GerenciarUsuariosController) {
+                ((GerenciarUsuariosController) controller).initData(email, permission);
+            }
+            else if (controller instanceof HorasTrabalhadasController) {
                 ((HorasTrabalhadasController) controller).initData(email, permission);
             } else if (controller instanceof MenuUserController) {
                 ((MenuUserController) controller).initData(email, permission);
