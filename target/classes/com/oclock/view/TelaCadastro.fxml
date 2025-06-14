@@ -94,11 +94,6 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <Button fx:id="btnCadastrarUser" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="8">
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </Button>
             <PasswordField fx:id="campoSenha" prefHeight="49.0" prefWidth="220.0" promptText="Senha" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #aad7ff; -fx-border-radius: 6;" GridPane.rowIndex="4">
                <font>
                   <Font name="System Bold" size="12.0" />
@@ -115,7 +110,6 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </TextField>
-            <Label fx:id="mensagemErro" alignment="CENTER" prefHeight="17.0" prefWidth="283.0" text="Label" textFill="TRANSPARENT" GridPane.rowIndex="10" />
          </children>
       </GridPane>
       <ImageView fitHeight="121.0" fitWidth="126.0" layoutX="107.0" layoutY="109.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="370.0" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="109.0">
@@ -308,7 +302,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <RadioButton fx:id="userUsuarioRadio" layoutX="207.0" layoutY="444.0" mnemonicParsing="false" text="Usuário" textFill="WHITE">
+      <RadioButton fx:id="userUsuarioRadio" layoutX="207.0" layoutY="442.0" mnemonicParsing="false" text="Usuário" textFill="WHITE">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -316,12 +310,18 @@
             <ToggleGroup fx:id="permissaoToggleGroup" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="userAdminRadio" layoutX="54.0" layoutY="444.0" mnemonicParsing="false" selected="true" text="Administrador" textFill="WHITE"> <font>
+      <RadioButton fx:id="userAdminRadio" layoutX="54.0" layoutY="442.0" mnemonicParsing="false" selected="true" text="Administrador" textFill="WHITE"> <font>
             <Font name="System Bold" size="12.0" />
          </font>
          <toggleGroup>
             <fx:reference source="permissaoToggleGroup" />
          </toggleGroup>
       </RadioButton>
+      <Label fx:id="mensagemErro" alignment="CENTER" layoutX="30.0" layoutY="514.0" prefHeight="17.0" prefWidth="283.0" text="Label" textFill="TRANSPARENT" />
+      <Button fx:id="btnCadastrarUser" layoutX="128.0" layoutY="473.0" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #26292a; -fx-background-radius: 6; -fx-border-color: #555555; -fx-border-radius: 6;" text="Confirmar" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
       </children>
 </AnchorPane>
