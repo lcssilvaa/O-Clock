@@ -69,18 +69,23 @@ public class MenuUserController implements Initializable {
 
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
-            sidebarPane.setVisible(false);
-            sidebarPane.setManaged(false);
         }
+        
         if (sidebarAdminPane != null) {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
             System.out.println("DEBUG (MenuUserController): sidebarAdminPane inicializado (largura: " + sidebarAdminPane.getPrefWidth() + ").");
         }
 
-        botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
-        overlayPane.setOnMouseClicked(this::handleOverlayClick);
+        if (botaoMenu != null) {
+            botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
+        } else {
+            System.err.println("ERRO: botaoMenu é NULO. Verifique o fx:id no FXML.");
+        }
+        if (overlayPane != null) { 
+            overlayPane.setOnMouseClicked(this::handleOverlayClick);
+        }
+        updateSidebarVisibility();
+        
 
         if (relogioLabel != null) {
             iniciarRelogio();
@@ -97,18 +102,22 @@ public class MenuUserController implements Initializable {
     }
 
     private void updateSidebarVisibility() {
-        if (sidebarPane == null || sidebarAdminPane == null) {
+    	if (sidebarPane == null || sidebarAdminPane == null) {
             System.err.println("Erro: Painéis do sidebar FXML não injetados em MenuUserController.");
             return;
         }
 
+        sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+        sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+        
+        sidebarAdminPane.setVisible(false);
+        sidebarAdminPane.setManaged(false);
+        sidebarPane.setVisible(false);
+        sidebarPane.setManaged(false);
+
         if (userPermission == null) {
-            System.err.println("Erro: Permissão do usuário não definida em MenuUserController para configurar sidebar.");
-            sidebarPane.setVisible(true);
-            sidebarPane.setManaged(true);
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
-            return;
+            System.err.println("Erro: Permissão do usuário não definida em MenuUserController para configurar sidebar. Defaulting to user.");
+            userPermission = "usuario"; 
         }
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
@@ -117,18 +126,15 @@ public class MenuUserController implements Initializable {
         if (isAdmin) {
         	System.out.println("DEBUG: Ativando sidebarAdminPane.");
             sidebarAdminPane.setVisible(true);
-            sidebarAdminPane.setManaged(true);;
-
-            sidebarPane.setVisible(false);
-            sidebarPane.setManaged(false);
+            sidebarAdminPane.setManaged(true);
         } else {
         	System.out.println("DEBUG: Ativando sidebarPane.");
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
         }
         System.out.println("DEBUG: updateSidebarVisibility() finalizado.");
     }
-
+    
     private AnchorPane getActiveSidebarPane() {
         boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
         return isAdmin ? sidebarAdminPane : sidebarPane;

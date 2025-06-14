@@ -31,6 +31,8 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import com.oclock.model.HorasTrabalhadas;
 import com.oclock.model.HorasTrabalhadas.RegistroDiario;
+import com.oclock.model.ScreenManager;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -63,39 +65,38 @@ public class HorasTrabalhadasController implements Initializable {
     
     private boolean sidebarVisible = false;
     private String userEmail, userPermission;
-    private HorasTrabalhadas horasTrabalhadasService = new HorasTrabalhadas(0, null, null); // Inicializar corretamente
-
-    public void initData(String email, String role) {
-        this.userEmail = email;
-        this.userPermission = role;
-        System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
-        
-        updateSidebarVisibility(); 
-        carregarMarcacoesFiltradas(); // Chamar aqui para carregar os dados ao iniciar a tela
-    }
+    private HorasTrabalhadas horasTrabalhadasService = new HorasTrabalhadas(0, null, null);
     
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("HorasTrabalhadasController: Inicializado.");
-        
-        botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
-        overlayPane.setOnMouseClicked(this::handleOverlayClick);
-
         if (overlayPane != null) {
             overlayPane.setVisible(false);
             overlayPane.setOpacity(0.0);
+
+            System.out.println("DEBUG: overlayPane configurado.");
+        } else {
+            System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
         }
 
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
-            sidebarPane.setVisible(false);
-            sidebarPane.setManaged(false); 
+           
         }
         if (sidebarAdminPane != null) {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
+            
+            System.out.println("DEBUG (HorasTrabalhadasController): sidebarAdminPane inicializado (largura: " + sidebarAdminPane.getPrefWidth() + ").");
         }
+
+        if (botaoMenu != null) {
+            botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
+        } else {
+            System.err.println("ERRO: botaoMenu é NULO. Verifique o fx:id no FXML.");
+        }
+        if (overlayPane != null) {
+            overlayPane.setOnMouseClicked(this::handleOverlayClick);
+        }
+
 
         if (filterButton != null) {
             filterButton.setOnAction(this::handleFilterButtonAction);
@@ -103,32 +104,50 @@ public class HorasTrabalhadasController implements Initializable {
         if (clearFilterButton != null) {
             clearFilterButton.setOnAction(this::handleClearFilterButtonAction);
         }
+
+    }
+
+    public void initData(String email, String role) {
+        this.userEmail = email;
+        this.userPermission = role;
+        System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
+
+        updateSidebarVisibility();
+        carregarMarcacoesFiltradas();
     }
 
     private void updateSidebarVisibility() {
-        boolean isAdmin = "admin".equalsIgnoreCase(userPermission);
+        if (sidebarPane == null || sidebarAdminPane == null) {
+            System.err.println("Erro: Painéis do sidebar FXML não injetados em HorasTrabalhadasController.");
+            return;
+        }
+
+        sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+        sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+
+        sidebarAdminPane.setVisible(false);
+        sidebarAdminPane.setManaged(false);
+        sidebarPane.setVisible(false);
+        sidebarPane.setManaged(false);
+
+        if (userPermission == null || userPermission.isEmpty()) { 
+            System.err.println("Erro: Permissão do usuário não definida em HorasTrabalhadasController. Defaulting to usuario.");
+            userPermission = "usuario";
+        }
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
+        System.out.println("DEBUG: É Admin? " + isAdmin);
 
         if (isAdmin) {
-            if (sidebarAdminPane != null) {
-                sidebarAdminPane.setVisible(true);
-                sidebarAdminPane.setManaged(true);
-                sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
-            }
-            if (sidebarPane != null) {
-                sidebarPane.setVisible(false);
-                sidebarPane.setManaged(false);
-            }
+            System.out.println("DEBUG: Ativando sidebarAdminPane.");
+            sidebarAdminPane.setVisible(true);
+            sidebarAdminPane.setManaged(true);
         } else {
-            if (sidebarAdminPane != null) {
-                sidebarAdminPane.setVisible(false);
-                sidebarAdminPane.setManaged(false);
-            }
-            if (sidebarPane != null) {
-                sidebarPane.setVisible(true);
-                sidebarPane.setManaged(true);
-                sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
-            }
+            System.out.println("DEBUG: Ativando sidebarPane.");
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
         }
+        System.out.println("DEBUG: updateSidebarVisibility() finalizado.");
     }
 
     private AnchorPane getActiveSidebarPane() {
@@ -151,6 +170,7 @@ public class HorasTrabalhadasController implements Initializable {
         if (activeSidebar != null) { 
             activeSidebar.setVisible(true);
             activeSidebar.setManaged(true); 
+            activeSidebar.setMouseTransparent(false);
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
             translateTransition.setToX(0);
             translateTransition.play();
@@ -198,7 +218,7 @@ public class HorasTrabalhadasController implements Initializable {
             vboxMarcacoesPorDia.getChildren().clear();
         }
 
-        // Agora chamamos o método que retorna a lista de RegistroDiario
+        // Agora chamamos o método que retorna a lista
         List<RegistroDiario> registrosDiarios = 
             horasTrabalhadasService.buscarRegistrosDiariosPorEmail(userEmail);
         
@@ -328,14 +348,13 @@ public class HorasTrabalhadasController implements Initializable {
                         timeline.setOnFinished(e -> {
                             expandableContent.setVisible(false);
                             expandableContent.setManaged(false);
+                            // Opcional: expandableContent.setPrefHeight(Region.USE_COMPUTED_SIZE); // Volta ao tamanho normal de cálculo
                         });
                     } else {
                         expandableContent.setVisible(true);
                         expandableContent.setManaged(true);
                         
-                        expandableContent.applyCss();
-                        expandableContent.layout();
-                        double targetHeight = expandableContent.prefHeight(-1);
+                        double targetHeight = expandableContent.prefHeight(-1); 
                         
                         timeline.getKeyFrames().addAll(
                             new KeyFrame(Duration.ZERO,
@@ -368,7 +387,7 @@ public class HorasTrabalhadasController implements Initializable {
     }
 
     private void closeSidebar() {
-        AnchorPane activeSidebar = getActiveSidebarPane(); // Use activeSidebar para fechar corretamente
+        AnchorPane activeSidebar = getActiveSidebarPane(); 
 
         if (overlayPane != null) {
             FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane);
@@ -377,18 +396,18 @@ public class HorasTrabalhadasController implements Initializable {
             fadeTransition.play();
             fadeTransition.setOnFinished(event -> {
                 overlayPane.setVisible(false);
-                overlayPane.setMouseTransparent(true);
+                overlayPane.setMouseTransparent(true); // <--- ESSENCIAL: Torna-o transparente ao mouse após fechar
             });
         }
 
-        if (activeSidebar != null) { // Fechar a sidebar ativa
+        if (activeSidebar != null) { 
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
             translateTransition.setToX(-activeSidebar.getPrefWidth());
             translateTransition.play();
             translateTransition.setOnFinished(event -> {
-                activeSidebar.setVisible(false); // Esconder completamente após animação
-                activeSidebar.setManaged(false); // Parar de gerenciar espaço
-                activeSidebar.setMouseTransparent(true);
+                activeSidebar.setVisible(false); 
+                activeSidebar.setManaged(false); 
+                activeSidebar.setMouseTransparent(true); // <--- ESSENCIAL: Torna a sidebar transparente ao mouse após fechar
             });
         }
         sidebarVisible = false;
@@ -405,28 +424,9 @@ public class HorasTrabalhadasController implements Initializable {
     private void handleRegistrarMarcacao(ActionEvent event) {
         System.out.println("Clicou em Registrar Marcação (no sidebar da tela de Horas Trabalhadas).");
         closeSidebar();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuUser.fxml"));
-            Parent root = loader.load();
-
-            MenuUserController controller = loader.getController();
-            if (controller != null) {
-                controller.initData(userEmail, userPermission);
-            } else {
-                System.err.println("Erro: Controlador de MenuUser é nulo ao voltar.");
-            }
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("OnClock - Bater Ponto");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar MenuUser.fxml para registrar marcação: " + e.getMessage());
-            e.printStackTrace();
-        }
+        ScreenManager.loadScreen((Node) event.getSource(), "MenuUser.fxml", userEmail, userPermission);
     }
-
+    
     @FXML
     private void handleConfiguracoes(ActionEvent event) {
         System.out.println("Clicou em Configurações");
