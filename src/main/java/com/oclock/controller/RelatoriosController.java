@@ -13,10 +13,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField; // Importação para TextField
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox; 
 import javafx.util.Duration;
 import javafx.stage.FileChooser;
 
@@ -41,7 +42,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalTime; // Adicionado para LocalTime
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +57,18 @@ public class RelatoriosController implements Initializable {
 
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
-    @FXML private TextField userEmailFilterField; // NOVO: Campo de texto para filtrar por e-mail
+    @FXML private TextField userEmailFilterField;
     @FXML private Label statusLabel;
 
-    private String userEmail;
-    private String userPermission;
+    // VBox que contém o filtro de e-mail - será sempre visível nesta tela
+    @FXML private VBox userEmailFilterVBox; 
+
+    private String userEmail; // Manter para compatibilidade com ScreenManager, mas não será usado para filtrar permissão
+    private String userPermission; // Manter para compatibilidade com ScreenManager, mas assumimos que é ADMIN
+
     private boolean sidebarVisible = false;
 
-    private HorasTrabalhadas horasTrabalhadasService; // Instância do serviço de horas trabalhadas
+    private HorasTrabalhadas horasTrabalhadasService;
 
     private List<RegistroDiario> currentFilteredRecords = new ArrayList<>();
 
@@ -76,9 +81,13 @@ public class RelatoriosController implements Initializable {
         }
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
         }
         if (sidebarAdminPane != null) {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
         }
         if (botaoMenu != null) {
             botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
@@ -87,33 +96,32 @@ public class RelatoriosController implements Initializable {
             overlayPane.setOnMouseClicked(this::handleOverlayClick);
         }
 
-        // Inicializa o serviço de HorasTrabalhadas
-        horasTrabalhadasService = new HorasTrabalhadas(0, null, null); // Os parâmetros são irrelevantes para este uso
+        horasTrabalhadasService = new HorasTrabalhadas(0, null, null);
 
-        // Define a data inicial e final padrão (ex: mês atual)
         LocalDate today = LocalDate.now();
         startDatePicker.setValue(today.withDayOfMonth(1));
         endDatePicker.setValue(today);
+
+        // Não há necessidade de controlar a visibilidade de userEmailFilterVBox aqui
+        // pois a tela é para ADMINs e o campo já deve estar visível por padrão no FXML.
+        // Se houver algum problema de layout ou visibilidade, pode-se forçar:
+        // if (userEmailFilterVBox != null) {
+        //     userEmailFilterVBox.setVisible(true);
+        //     userEmailFilterVBox.setManaged(true);
+        // }
     }
 
     public void initData(String email, String role) {
         this.userEmail = email;
-        this.userPermission = role;
+        this.userPermission = role; // Assume-se que 'role' sempre será "ADMIN" para esta tela
         System.out.println("DEBUG (RelatoriosController): E-mail: " + userEmail + ", Permissão: " + userPermission);
-        updateSidebarVisibility();
+        updateSidebarVisibility(); // Mantém a lógica da sidebar baseada na permissão, caso ela seja genérica
 
-        // Se for admin, o campo de filtro de e-mail é visível e habilitado.
-        // Se não for admin, ele é invisível e desabilitado.
-        if (!"ADMIN".equals(userPermission) && userEmailFilterField != null) {
-            userEmailFilterField.setVisible(false);
-            userEmailFilterField.setManaged(false); // Não ocupa espaço no layout
-        } else if (userEmailFilterField != null) {
-            userEmailFilterField.setVisible(true);
-            userEmailFilterField.setManaged(true);
-        }
-
-        // Carrega e filtra os dados iniciais com base nas datas e permissões
-        handleFilterData(null);
+        // Não há necessidade de esconder ou mostrar o campo de email aqui,
+        // pois a página é dedicada a ADMINs e o campo já é exibido por padrão.
+        
+        // Carrega e filtra os dados iniciais ao iniciar a tela
+        handleFilterData(null); 
     }
 
     @FXML
@@ -122,44 +130,49 @@ public class RelatoriosController implements Initializable {
         
         LocalDate startDate = startDatePicker.getValue();
         LocalDate endDate = endDatePicker.getValue();
-        String filterEmail = userEmailFilterField != null ? userEmailFilterField.getText() : "";
+        
+        // O campo de email agora SEMPRE existirá e será visível, então podemos ler diretamente
+        String filterEmail = userEmailFilterField != null ? userEmailFilterField.getText().trim() : "";
 
-        List<RegistroDiario> allRegistros;
+        // Sempre busca todos os registros, já que a tela é para ADMIN
+        List<RegistroDiario> allRegistros = horasTrabalhadasService.buscarTodosRegistrosDiarios();
 
-        // Se o usuário logado é ADMIN, busca todos os registros e permite filtro por e-mail
-        if ("ADMIN".equals(userPermission)) {
-            allRegistros = horasTrabalhadasService.buscarTodosRegistrosDiarios();
-            // Se o campo de filtro de e-mail estiver preenchido, aplica o filtro adicional
-            if (!filterEmail.isEmpty()) {
-                allRegistros = allRegistros.stream()
-                                           .filter(r -> r.getEmailUsuario() != null && r.getEmailUsuario().equalsIgnoreCase(filterEmail))
-                                           .collect(Collectors.toList());
-            }
-        } else {
-            // Se não é ADMIN, busca apenas os registros do próprio usuário logado
-            allRegistros = horasTrabalhadasService.buscarRegistrosDiariosPorEmail(userEmail);
+        // Verificação de null para allRegistros antes de operar (PONTO DE ERRO ANTERIOR)
+        if (allRegistros == null) {
+            allRegistros = new ArrayList<>(); // Garante que a lista não é null
+            System.err.println("AVISO: horasTrabalhadasService.buscarTodosRegistrosDiarios() retornou null. Inicializando como lista vazia.");
+        }
+        
+        System.out.println("DEBUG: Registros totais carregados (antes de filtros de data/email): " + allRegistros.size());
+
+        // Aplica o filtro de e-mail se o campo não estiver vazio
+        if (!filterEmail.isEmpty()) {
+            System.out.println("DEBUG: Filtrando por email: '" + filterEmail + "'");
+            allRegistros = allRegistros.stream()
+                                       .filter(r -> r.getEmailUsuario() != null && r.getEmailUsuario().equalsIgnoreCase(filterEmail))
+                                       .collect(Collectors.toList());
         }
 
-        currentFilteredRecords = allRegistros.stream()
+        // Aplica o filtro de data
+        List<RegistroDiario> filteredAndSortedRecords = allRegistros.stream()
             .filter(registro -> {
                 LocalDate dataRegistro = registro.getData();
                 boolean passFilter = true;
 
-                // Filtro por data inicial
                 if (startDate != null && dataRegistro.isBefore(startDate)) {
                     passFilter = false;
                 }
-                // Filtro por data final
                 if (endDate != null && dataRegistro.isAfter(endDate)) {
                     passFilter = false;
                 }
                 
                 return passFilter;
             })
-            // Ordena os registros do mais recente para o mais antigo
             .sorted((r1, r2) -> r2.getData().compareTo(r1.getData()))
             .collect(Collectors.toList());
 
+        currentFilteredRecords = filteredAndSortedRecords;
+        
         statusLabel.setText("Dados prontos para exportação: " + currentFilteredRecords.size() + " registros.");
         System.out.println("DEBUG: " + currentFilteredRecords.size() + " registros filtrados para exportação.");
     }
@@ -250,7 +263,7 @@ public class RelatoriosController implements Initializable {
                         .setFontSize(12)
                         .setMarginBottom(20));
 
-                float[] columnWidths = {1, 1, 1, 1, 2}; // Adicionado uma coluna para o e-mail
+                float[] columnWidths = {1, 1, 1, 1, 2};
                 Table table = new Table(UnitValue.createPercentArray(columnWidths));
                 table.setWidth(UnitValue.createPercentValue(100));
 
@@ -264,7 +277,7 @@ public class RelatoriosController implements Initializable {
                 table.addHeaderCell(new Paragraph("Entrada").addStyle(headerStyle));
                 table.addHeaderCell(new Paragraph("Saída").addStyle(headerStyle));
                 table.addHeaderCell(new Paragraph("Horas Totais").addStyle(headerStyle));
-                table.addHeaderCell(new Paragraph("E-mail Usuário").addStyle(headerStyle)); // Novo cabeçalho
+                table.addHeaderCell(new Paragraph("E-mail Usuário").addStyle(headerStyle));
 
                 com.itextpdf.layout.Style cellStyle = new com.itextpdf.layout.Style()
                     .setFontSize(9)
@@ -281,7 +294,7 @@ public class RelatoriosController implements Initializable {
                     table.addCell(new Paragraph(entradaStr).addStyle(cellStyle));
                     table.addCell(new Paragraph(saidaStr).addStyle(cellStyle));
                     table.addCell(new Paragraph(registro.getHorasTrabalhadas()).addStyle(cellStyle));
-                    table.addCell(new Paragraph(registro.getEmailUsuario()).addStyle(cellStyle)); // Adiciona o e-mail
+                    table.addCell(new Paragraph(registro.getEmailUsuario()).addStyle(cellStyle));
                 }
 
                 document.add(table);
@@ -329,7 +342,7 @@ public class RelatoriosController implements Initializable {
             headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Data", "Entrada", "Saída", "Horas Trabalhadas", "Email Usuario"}; // Adiciona Email Usuario
+            String[] headers = {"Data", "Entrada", "Saída", "Horas Trabalhadas", "Email Usuario"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -380,7 +393,6 @@ public class RelatoriosController implements Initializable {
         }
     }
 
-    // Método auxiliar para mostrar alertas
     private void showAlert(AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -390,7 +402,7 @@ public class RelatoriosController implements Initializable {
     }
 
 
-    // --- Métodos de Controle da Sidebar (Copie e Cole de outros controladores) ---
+    // --- Métodos de Controle da Sidebar ---
     private void updateSidebarVisibility() {
         AnchorPane userSidebar = sidebarPane;
         AnchorPane adminSidebar = sidebarAdminPane;
@@ -400,6 +412,8 @@ public class RelatoriosController implements Initializable {
             return;
         }
 
+        // Esta lógica de sidebar continua baseada na permissão, pois outras telas
+        // podem ter sidebars diferentes.
         userSidebar.setVisible(false);
         userSidebar.setManaged(false);
         userSidebar.setMouseTransparent(true);
@@ -415,7 +429,6 @@ public class RelatoriosController implements Initializable {
             userSidebar.setVisible(true);
             userSidebar.setManaged(true);
         }
-        // Garante que a sidebar comece fechada
         if (!sidebarVisible) {
             userSidebar.setTranslateX(-userSidebar.getPrefWidth());
             adminSidebar.setTranslateX(-adminSidebar.getPrefWidth());
@@ -511,7 +524,6 @@ public class RelatoriosController implements Initializable {
         ScreenManager.loadLoginScreen((Node) event.getSource());
     }
 
-    // Ações específicas da sidebar admin
     @FXML
     private void handleGestao(ActionEvent event) {
         closeSidebar();

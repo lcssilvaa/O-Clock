@@ -163,3 +163,97 @@
     -fx-scale-x: 0.98;
     -fx-scale-y: 0.98;
 }
+
+Perfeito que a funcionalidade principal deu certo! Agora vamos ajustar os detalhes visuais que você mencionou:
+
+Texto da data e cor do DatePicker: Entendi que o texto dentro do DatePicker continua branco, o que é bom, mas a interface visual do calendário pop-up e talvez outros elementos ainda estão com uma cor que não se integra bem ao tema escuro. Vamos refinar o CSS para isso.
+TextField muito grande: O TextField para o e-mail está com um tamanho excessivo. Vamos ajustar a largura dele.
+Ajuste 1: Refinando o CSS para o DatePicker
+O problema de "cor ainda é branca" (assumindo que seja o fundo do calendário ou algo que pareça claro) pode ser resolvido com CSS mais específico ou sobrepondo regras existentes. Vamos tentar garantir que o DatePicker tenha um visual mais adequado ao seu tema escuro.
+
+Se as cores do calendário (fundo, dias da semana, etc.) ainda estiverem claras, precisamos ser mais assertivos no CSS.
+
+No seu arquivo style.css, adicione/modifique as seguintes regras:
+
+CSS
+
+/* --- Estilos para DatePicker --- */
+
+/* Estilo geral da caixa de texto do DatePicker */
+.date-picker .text-field {
+    -fx-text-fill: white; /* Cor do texto digitado/exibido */
+    -fx-background-color: #26292a; /* Fundo do campo de texto */
+    -fx-background-radius: 6;
+    -fx-border-color: #555555;
+    -fx-border-radius: 6;
+}
+
+/* Estilo do botão do calendário (a pequena seta) */
+.date-picker .arrow-button {
+    -fx-background-color: #26292a; /* Fundo do botão da seta */
+    -fx-background-radius: 6;
+    -fx-border-color: #555555;
+    -fx-border-radius: 6;
+}
+
+/* Cor da seta dentro do botão do calendário */
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white; /* Cor da seta */
+}
+
+/* Estilo do pop-up do calendário (o painel que aparece com os dias) */
+.date-picker-popup {
+    -fx-background-color: #26292a; /* Fundo geral do pop-up do calendário */
+    -fx-border-color: #555555;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+/* Painel superior do calendário (onde ficam o mês e o ano) */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #3e5066; /* Fundo do painel de mês/ano */
+}
+
+/* Cor do texto do mês e ano no cabeçalho do calendário */
+.date-picker-popup .spinner .text-field {
+    -fx-text-fill: white; /* Texto do mês e ano */
+}
+
+/* Cor dos botões de navegação do mês/ano (setas de avanço/retrocesso) */
+.date-picker-popup .spinner .button .arrow-button .arrow {
+    -fx-background-color: white; /* Cor das setas de navegação */
+}
+
+/* Cor dos dias da semana (Seg, Ter, Qua...) */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #aad7ff; /* Cor dos nomes dos dias da semana */
+}
+
+/* Células dos dias do mês */
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent; /* Garante que o fundo não seja claro */
+    -fx-text-fill: white; /* Cor dos números dos dias */
+}
+
+/* Células dos dias do mês ao passar o mouse */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #3e5066; /* Fundo ao passar o mouse */
+}
+
+/* Célula do dia selecionado */
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #aad7ff; /* Fundo do dia selecionado */
+    -fx-text-fill: #123057; /* Texto do dia selecionado (para contrastar com o fundo azul) */
+}
+
+/* Células de dias fora do mês atual, para desativar visualmente */
+.date-picker-popup .day-cell.previous-month,
+.date-picker-popup .day-cell.next-month {
+    -fx-text-fill: #888888; /* Cor mais clara para dias de meses adjacentes */
+}
+
+/* Célula do dia de hoje (current-month) */
+.date-picker-popup .day-cell.today {
+    -fx-background-color: #555555; /* Um cinza mais escuro para o dia atual */
+}
