@@ -14,7 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -55,11 +57,13 @@ public class CadastroController implements Initializable {
     @FXML
     private TextField campoCPF;
     @FXML
-    private CheckBox userUsuarioCheck;
+    private RadioButton userUsuarioRadio;
     @FXML
-    private CheckBox userAdminCheck;
+    private RadioButton userAdminRadio;
     @FXML
     private Label mensagemErro;
+    @FXML
+    private ToggleGroup permissaoToggleGroup;
 
     private Cadastro cadastroService = new Cadastro();
     
@@ -317,12 +321,17 @@ public class CadastroController implements Initializable {
         System.out.println("Teste");
         closeSidebar();
     }
+    
+    public CadastroController() {
+    	this.cadastroService = new Cadastro();
+    }
 
     @FXML
     private void cadastrarUsuario(ActionEvent event) {
+    	System.out.println("DEBUG: botão cadastrar apertado!");
        
         if (campoNome == null || campoEmail == null || campoSenha == null || campoCPF == null ||
-            userUsuarioCheck == null || userAdminCheck == null || mensagemErro == null) {
+            userUsuarioRadio == null || userAdminRadio == null || mensagemErro == null) {
             System.err.println("ERRO: Nem todos os campos de cadastro estão mapeados no FXML. Verifique os fx:id.");
             exibirMensagem("Erro interno: Campos não carregados. Contate o suporte.", Color.RED);
             return;
@@ -334,10 +343,11 @@ public class CadastroController implements Initializable {
         String cpf = campoCPF.getText();
 
         String permissao = "";
-        if (userUsuarioCheck.isSelected()) {
-            permissao = "USER"; 
-        } else if (userAdminCheck.isSelected()) {
-            permissao = "ADMIN";
+        
+        if (permissaoToggleGroup.getSelectedToggle() == userUsuarioRadio) {
+            permissao = "usuario"; 
+        } else if (permissaoToggleGroup.getSelectedToggle() == userAdminRadio) {
+            permissao = "admin";
         } else {
             exibirMensagem("Selecione um tipo de usuário (Usuário ou Administrador).", Color.RED);
             return;
@@ -418,8 +428,8 @@ public class CadastroController implements Initializable {
         if (campoEmail != null) campoEmail.clear();
         if (campoSenha != null) campoSenha.clear();
         if (campoCPF != null) campoCPF.clear();
-        if (userUsuarioCheck != null) userUsuarioCheck.setSelected(true);
-        if (userAdminCheck != null) userAdminCheck.setSelected(false);
+        if (userUsuarioRadio != null) userUsuarioRadio.setSelected(true);
+        if (userAdminRadio != null) userAdminRadio.setSelected(false);
         if (mensagemErro != null) {
             mensagemErro.setVisible(false);
             mensagemErro.setManaged(false);
