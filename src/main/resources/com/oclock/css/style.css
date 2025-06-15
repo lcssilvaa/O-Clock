@@ -164,22 +164,6 @@
     -fx-scale-y: 0.98;
 }
 
-Perfeito que a funcionalidade principal deu certo! Agora vamos ajustar os detalhes visuais que você mencionou:
-
-Texto da data e cor do DatePicker: Entendi que o texto dentro do DatePicker continua branco, o que é bom, mas a interface visual do calendário pop-up e talvez outros elementos ainda estão com uma cor que não se integra bem ao tema escuro. Vamos refinar o CSS para isso.
-TextField muito grande: O TextField para o e-mail está com um tamanho excessivo. Vamos ajustar a largura dele.
-Ajuste 1: Refinando o CSS para o DatePicker
-O problema de "cor ainda é branca" (assumindo que seja o fundo do calendário ou algo que pareça claro) pode ser resolvido com CSS mais específico ou sobrepondo regras existentes. Vamos tentar garantir que o DatePicker tenha um visual mais adequado ao seu tema escuro.
-
-Se as cores do calendário (fundo, dias da semana, etc.) ainda estiverem claras, precisamos ser mais assertivos no CSS.
-
-No seu arquivo style.css, adicione/modifique as seguintes regras:
-
-CSS
-
-/* --- Estilos para DatePicker --- */
-
-/* Estilo geral da caixa de texto do DatePicker */
 .date-picker .text-field {
     -fx-text-fill: white; /* Cor do texto digitado/exibido */
     -fx-background-color: #26292a; /* Fundo do campo de texto */
@@ -256,4 +240,20 @@ CSS
 /* Célula do dia de hoje (current-month) */
 .date-picker-popup .day-cell.today {
     -fx-background-color: #555555; /* Um cinza mais escuro para o dia atual */
+}
+
+/* Para o calendário interno, se ele não estiver pegando as cores */
+.date-picker-popup .calendar-grid {
+    -fx-background-color: #26292a; /* Garante que a grade do calendário também tenha fundo escuro */
+}
+
+/* --- Fim dos estilos para DatePicker --- */
+
+/* Estilo para o TextField do Email do Usuário, se ainda precisar de ajustes no CSS */
+.text-field#userEmailFilterField { /* Usando o ID para especificidade */
+    -fx-text-fill: white;
+    -fx-background-color: #26292a;
+    -fx-border-color: #555555;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
 }

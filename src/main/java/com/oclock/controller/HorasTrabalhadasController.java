@@ -219,7 +219,7 @@ public class HorasTrabalhadasController implements Initializable {
             vboxMarcacoesPorDia.getChildren().clear();
         }
 
-        // Agora chamamos o método que retorna a lista
+        // método que retorna a lista
         List<RegistroDiario> registrosDiarios = 
             horasTrabalhadasService.buscarRegistrosDiariosPorEmail(userEmail);
         

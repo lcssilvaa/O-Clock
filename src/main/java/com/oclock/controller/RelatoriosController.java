@@ -60,18 +60,25 @@ public class RelatoriosController implements Initializable {
     @FXML private TextField userEmailFilterField;
     @FXML private Label statusLabel;
 
-    // VBox que contém o filtro de e-mail - será sempre visível nesta tela
     @FXML private VBox userEmailFilterVBox; 
 
-    private String userEmail; // Manter para compatibilidade com ScreenManager, mas não será usado para filtrar permissão
-    private String userPermission; // Manter para compatibilidade com ScreenManager, mas assumimos que é ADMIN
-
+    private String userEmail; 
+    private String userPermission; 
     private boolean sidebarVisible = false;
 
     private HorasTrabalhadas horasTrabalhadasService;
 
     private List<RegistroDiario> currentFilteredRecords = new ArrayList<>();
 
+    public void initData(String email, String role) {
+        this.userEmail = email;
+        this.userPermission = role;
+        System.out.println("DEBUG (RelatoriosController): E-mail: " + userEmail + ", Permissão: " + userPermission);
+        updateSidebarVisibility();
+
+        handleFilterData(null); 
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (overlayPane != null) {
@@ -101,29 +108,8 @@ public class RelatoriosController implements Initializable {
         LocalDate today = LocalDate.now();
         startDatePicker.setValue(today.withDayOfMonth(1));
         endDatePicker.setValue(today);
-
-        // Não há necessidade de controlar a visibilidade de userEmailFilterVBox aqui
-        // pois a tela é para ADMINs e o campo já deve estar visível por padrão no FXML.
-        // Se houver algum problema de layout ou visibilidade, pode-se forçar:
-        // if (userEmailFilterVBox != null) {
-        //     userEmailFilterVBox.setVisible(true);
-        //     userEmailFilterVBox.setManaged(true);
-        // }
     }
-
-    public void initData(String email, String role) {
-        this.userEmail = email;
-        this.userPermission = role; // Assume-se que 'role' sempre será "ADMIN" para esta tela
-        System.out.println("DEBUG (RelatoriosController): E-mail: " + userEmail + ", Permissão: " + userPermission);
-        updateSidebarVisibility(); // Mantém a lógica da sidebar baseada na permissão, caso ela seja genérica
-
-        // Não há necessidade de esconder ou mostrar o campo de email aqui,
-        // pois a página é dedicada a ADMINs e o campo já é exibido por padrão.
-        
-        // Carrega e filtra os dados iniciais ao iniciar a tela
-        handleFilterData(null); 
-    }
-
+    
     @FXML
     private void handleFilterData(ActionEvent event) {
         statusLabel.setText("Buscando dados...");
@@ -402,7 +388,6 @@ public class RelatoriosController implements Initializable {
     }
 
 
-    // --- Métodos de Controle da Sidebar ---
     private void updateSidebarVisibility() {
         AnchorPane userSidebar = sidebarPane;
         AnchorPane adminSidebar = sidebarAdminPane;
@@ -412,8 +397,6 @@ public class RelatoriosController implements Initializable {
             return;
         }
 
-        // Esta lógica de sidebar continua baseada na permissão, pois outras telas
-        // podem ter sidebars diferentes.
         userSidebar.setVisible(false);
         userSidebar.setManaged(false);
         userSidebar.setMouseTransparent(true);
@@ -422,21 +405,30 @@ public class RelatoriosController implements Initializable {
         adminSidebar.setManaged(false);
         adminSidebar.setMouseTransparent(true);
 
-        if ("ADMIN".equals(userPermission)) {
+        if ("admin".equals(userPermission)) {
             adminSidebar.setVisible(true);
             adminSidebar.setManaged(true);
-        } else {
+            sidebarAdminPane.setMouseTransparent(false);
+            
+            if (!sidebarVisible) { 
+                sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            	}
+            } else {
             userSidebar.setVisible(true);
             userSidebar.setManaged(true);
         }
         if (!sidebarVisible) {
             userSidebar.setTranslateX(-userSidebar.getPrefWidth());
             adminSidebar.setTranslateX(-adminSidebar.getPrefWidth());
+            sidebarPane.setMouseTransparent(false);
+            if (!sidebarVisible) {
+                sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            }
         }
     }
 
     private AnchorPane getActiveSidebarPane() {
-        if ("ADMIN".equals(userPermission)) {
+        if ("admin".equals(userPermission)) {
             return sidebarAdminPane;
         } else {
             return sidebarPane;
