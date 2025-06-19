@@ -10,7 +10,6 @@ import java.util.List;
 
 public class UserDAO {
 
-    // Método para buscar um usuário pelo email (usado no login)
     public User getUserByEmail(String email) throws SQLException {
         String sql = "SELECT id_usuario, email, senha_hash, nome_completo, cpf, permissao, ativo, data_criacao, data_atualizacao FROM usuarios WHERE email = ?";
         try (Connection conn = Conexao.conectar();
@@ -33,20 +32,6 @@ public class UserDAO {
             }
         }
         return null;
-    }
-
-    public void addUser(User user) throws SQLException {
-        String sql = "INSERT INTO usuarios (email, senha_hash, nome_completo, cpf, permissao, ativo, data_criacao, data_atualizacao) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getEmail());
-            stmt.setString(2, user.getPasswordHash());
-            stmt.setString(3, user.getFullName());
-            stmt.setString(4, user.getCpf());
-            stmt.setString(5, user.getPermission());
-            stmt.setBoolean(6, user.isActive()); 
-            stmt.executeUpdate();
-        }
     }
 
     public void updateUser(User user) throws SQLException {

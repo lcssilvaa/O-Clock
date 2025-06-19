@@ -285,3 +285,10 @@
 .delete-button:hover {
     -fx-background-color: #c82333;
 }
+
+/* Para o AnchorPane de conteúdo principal, se você quiser um fundo muito claro */
+/* .root {
+    -fx-background-color: #F5F5F5; /* Fundo geral, se quiser clarear tudo */
+/* } */
+
+

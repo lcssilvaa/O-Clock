@@ -1,0 +1,195 @@
+/*
+ * Estilos específicos para a tela de Gestão de Usuários (GestaoUsuarios.fxml)
+ *
+ * Este arquivo CSS deve ser importado APENAS no GestaoUsuarios.fxml
+ * para evitar sobrescrever estilos globais de outras telas.
+ */
+
+/* Estilos para o campo de pesquisa (TextField) na Gestão de Usuários */
+#campoPesquisa { /* Usando o fx:id para especificidade */
+    -fx-background-color: #F0F0F0; /* Fundo cinza claro */
+    -fx-background-radius: 5;    /* Bordas arredondadas */
+    -fx-border-color: #D0D0D0;   /* Borda suave */
+    -fx-border-radius: 5;
+    -fx-border-width: 1px;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 10px;       /* Espaçamento interno */
+    -fx-text-fill: black; /* Texto preto para melhor leitura em fundo claro */
+}
+
+/* Estilo de foco para o campo de pesquisa */
+#campoPesquisa:focused {
+    -fx-border-color: #4A90E2; /* Cor de foco azul */
+    -fx-background-color: white; /* Fundo branco ao focar */
+}
+
+/* Estilos para os botões de ação na Gestão de Usuários */
+/* Eles usarão seus IDs para sobrescrever o estilo global .button se necessário */
+
+/* Botão de Pesquisar */
+#btnPesquisar { /* Usando o fx:id para especificidade */
+    -fx-background-color: #2ECC71; /* Verde */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+    -fx-transition: -fx-background-color 0.2s, -fx-opacity 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+#btnPesquisar:hover {
+    -fx-background-color: #28B463; /* Tom mais escuro no hover */
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+#btnPesquisar:pressed {
+    -fx-background-color: #1F9D55;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Botão de Editar */
+#btnEditarUsuario {
+    -fx-background-color: #4A90E2; /* Azul */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+    -fx-transition: -fx-background-color 0.2s, -fx-opacity 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+#btnEditarUsuario:hover {
+    -fx-background-color: #357ABD; /* Tom mais escuro no hover */
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+#btnEditarUsuario:pressed {
+    -fx-background-color: #2C6AA0;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Botão de Remover */
+#btnRemoverUsuario {
+    -fx-background-color: #E74C3C; /* Vermelho */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+    -fx-transition: -fx-background-color 0.2s, -fx-opacity 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+#btnRemoverUsuario:hover {
+    -fx-background-color: #CB4335; /* Tom mais escuro no hover */
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+#btnRemoverUsuario:pressed {
+    -fx-background-color: #B03A2E;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Botão de Atualizar */
+#btnAtualizarTabela {
+    -fx-background-color: #3498DB; /* Azul um pouco diferente para "Atualizar" */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+    -fx-transition: -fx-background-color 0.2s, -fx-opacity 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+#btnAtualizarTabela:hover {
+    -fx-background-color: #217DBB; /* Tom mais escuro no hover */
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+#btnAtualizarTabela:pressed {
+    -fx-background-color: #1A6093;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Estilo para a mensagem de status (se estiver visível e precisar de um visual específico) */
+#mensagemStatus {
+    -fx-text-fill: #9ac5fc; /* Cor existente para status */
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 5px;
+    -fx-background-radius: 5;
+    -fx-alignment: center;
+}
+
+/* Para mensagens de erro, se for adicionada via código */
+.error-message {
+    -fx-text-fill: white;
+    -fx-background-color: #E74C3C; /* Fundo vermelho para erros */
+}
+
+/* Opcional: Estilo para o VBox principal onde está a tabela (dando um "card" look) */
+/* Se você quiser que o painel da tabela se destaque com fundo branco/claro */
+.main-content-vbox { /* Adicione fx:id="mainContentVBox" ou styleClass="main-content-vbox" ao seu VBox no FXML */
+    -fx-background-color: white; /* Fundo branco ou muito claro */
+    -fx-background-radius: 10; /* Bordas arredondadas */
+    -fx-border-radius: 10;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Leve sombra */
+}
+
+/* Estilo para a TableView se você quiser que ela tenha um fundo branco ou linhas alternadas visíveis */
+.table-view {
+    -fx-background-color: transparent; /* Deixa o VBox por trás gerenciar o fundo */
+    -fx-border-color: #D0D0D0; /* Borda suave para a tabela */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Cabeçalho da Tabela */
+.table-view .column-header-background {
+    -fx-background-color: #123057; /* Seu azul escuro */
+    -fx-background-radius: 5 5 0 0; /* Apenas topo arredondado */
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Células da Tabela (cor das linhas alternadas) */
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #EEEEEE; /* Linhas divisórias muito finas */
+    -fx-border-width: 0 0 1px 0;
+    -fx-font-size: 13px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #F8F8F8; /* Cinza claro para linhas ímpares */
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #ADD8E6; /* Azul claro ao selecionar */
+    -fx-text-fill: black; /* Texto preto para melhor contraste na seleção */
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #E0F2F7; /* Azul muito claro ao passar o mouse */
+}
+
+/* Barra de rolagem interna da TableView (se aplicável) */
+.table-view .scroll-bar:vertical .increment-button,
+.table-view .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.table-view .scroll-bar .thumb {
+    -fx-background-color: #BBBBBB;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.table-view .scroll-bar .track {
+    -fx-background-color: #F0F0F0;
+    -fx-background-insets: 0;
+}
