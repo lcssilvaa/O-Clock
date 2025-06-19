@@ -34,7 +34,10 @@
                   <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0" spacing="10.0">
                      <children>
                         <TextField fx:id="campoPesquisa" promptText="Pesquisar usuário" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnPesquisar" mnemonicParsing="false" text="Pesquisar" />
+                        <Button fx:id="btnPesquisar" mnemonicParsing="false" text="Pesquisar">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Button>
                      </children>
                   </HBox>
                   <TableView fx:id="tabelaUsuarios" prefHeight="300.0" prefWidth="305.0" styleClass="table-view" VBox.vgrow="ALWAYS">

@@ -1,10 +1,11 @@
 package com.oclock.controller;
 
 import com.oclock.model.ScreenManager;
-import com.oclock.dao.UserDAO; // Importe seu UserDao
-import com.oclock.model.User; // Importe sua classe User (modelo)
+import com.oclock.dao.UserDAO;
+import com.oclock.model.User;
 
 import javafx.animation.TranslateTransition;
+import javafx.animation.FadeTransition; // Importe FadeTransition
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -40,7 +41,7 @@ public class GestaoUsuariosController implements Initializable {
     @FXML
     private AnchorPane sidebarPane;
     @FXML
-    private AnchorPane overlayPane;
+    private AnchorPane overlayPane; // Este será o painel que cobre a tela
     @FXML
     private ImageView botaoMenu;
     @FXML
@@ -80,33 +81,61 @@ public class GestaoUsuariosController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
-        sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+        // Inicializa sidebars fora da tela e os oculta/desabilita o gerenciamento
+        if (sidebarAdminPane != null) {
+            sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+            sidebarAdminPane.setVisible(false);
+            sidebarAdminPane.setManaged(false);
+        } else {
+            System.err.println("ERRO: sidebarAdminPane é NULO. Verifique o fx:id no FXML.");
+        }
+        if (sidebarPane != null) {
+            sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+            sidebarPane.setVisible(false);
+            sidebarPane.setManaged(false);
+        } else {
+            System.err.println("ERRO: sidebarPane é NULO. Verifique o fx:id no FXML.");
+        }
 
-        slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
-        slideInAdmin.setToX(0);
-        slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
-        slideOutAdmin.setToX(-sidebarAdminPane.getPrefWidth());
+        // Inicializa o overlay
+        if (overlayPane != null) {
+            overlayPane.setVisible(false); // Começa invisível
+            overlayPane.setOpacity(0.0);   // Começa totalmente transparente
+            // O clique no overlay deve fechar o sidebar
+            overlayPane.setOnMouseClicked(event -> toggleSidebar());
+        } else {
+            System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
+        }
 
-        slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-        slideInUser.setToX(0);
-        slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-        slideOutUser.setToX(-sidebarPane.getPrefWidth());
+        // Configuração das transições (Verificar nulidade para evitar NullPointerException)
+        if (sidebarAdminPane != null) {
+            slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideInAdmin.setToX(0);
+            slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideOutAdmin.setToX(-sidebarAdminPane.getPrefWidth());
+        }
 
-        overlayPane.setOnMouseClicked(event -> toggleSidebar());
+        if (sidebarPane != null) {
+            slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideInUser.setToX(0);
+            slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideOutUser.setToX(-sidebarPane.getPrefWidth());
+        }
 
-        // CORREÇÃO AQUI: Usando "fullName" para a coluna de nome e "permission"
-        colunaNome.setCellValueFactory(new PropertyValueFactory<>("fullName")); // Seu User tem getFullName()
-        colunaEmail.setCellValueFactory(new PropertyValueFactory<>("email")); // Seu User tem getEmail()
-        colunaPermissao.setCellValueFactory(new PropertyValueFactory<>("permission")); // Seu User tem getPermission()
+        // Correção aqui: colunaEmail.setCellValueFactory (sem o .PropertyFactory)
+        colunaNome.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        colunaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        colunaPermissao.setCellValueFactory(new PropertyValueFactory<>("permission"));
 
         tabelaUsuarios.setItems(listaDeUsuarios);
 
-        userDao = new UserDAO(); // Instanciando seu UserDao
+        userDao = new UserDAO();
 
-        carregarUsuarios(); // Carrega usuários ao iniciar a tela
+        carregarUsuarios();
 
+        // Inicia a mensagem de status invisível
         mensagemStatus.setText("");
+        mensagemStatus.setVisible(false);
 
         btnPesquisar.setOnAction(this::handlePesquisarUsuario);
         btnEditarUsuario.setOnAction(this::handleEditarUsuario);
@@ -118,17 +147,28 @@ public class GestaoUsuariosController implements Initializable {
         this.currentUserEmail = email;
         this.currentUserPermission = permission;
 
+        // Ativa o sidebar correto com base na permissão
         if ("admin".equalsIgnoreCase(permission)) {
-            sidebarAdminPane.setVisible(true);
-            sidebarPane.setVisible(false);
+            if (sidebarAdminPane != null) {
+                sidebarAdminPane.setVisible(true);
+                sidebarAdminPane.setManaged(true);
+            }
+            if (sidebarPane != null) {
+                sidebarPane.setVisible(false);
+                sidebarPane.setManaged(false);
+            }
         } else {
             showAlert(Alert.AlertType.ERROR, "Acesso Negado", "Você não tem permissão para acessar esta tela.");
-            // Opcional: Redirecionar para uma tela permitida para o usuário comum
-            // ScreenManager.loadScreen(mainContentPane, "MenuUser.fxml", currentUserEmail, currentUserPermission);
-            sidebarAdminPane.setVisible(false);
-            sidebarPane.setVisible(true);
+            if (sidebarAdminPane != null) {
+                sidebarAdminPane.setVisible(false);
+                sidebarAdminPane.setManaged(false);
+            }
+            if (sidebarPane != null) {
+                sidebarPane.setVisible(true);
+                sidebarPane.setManaged(true);
+            }
         }
-        carregarUsuarios(); // Recarrega os usuários toda vez que a tela é acessada
+        carregarUsuarios();
     }
 
     @FXML
@@ -137,45 +177,82 @@ public class GestaoUsuariosController implements Initializable {
     }
 
     private void toggleSidebar() {
-        if (isSidebarOpen) {
-            if ("admin".equalsIgnoreCase(currentUserPermission)) {
-                slideOutAdmin.play();
-            } else {
-                slideOutUser.play();
-            }
-            overlayPane.setVisible(false);
+        if (overlayPane == null) {
+            System.err.println("OverlayPane não está injetado. Verifique o FXML.");
+            return; // Sai do método para evitar NullPointerException
+        }
+
+        TranslateTransition currentSlideOut = null;
+        TranslateTransition currentSlideIn = null;
+        AnchorPane currentSidebar = null;
+
+        if ("admin".equalsIgnoreCase(currentUserPermission)) {
+            currentSlideOut = slideOutAdmin;
+            currentSlideIn = slideInAdmin;
+            currentSidebar = sidebarAdminPane;
         } else {
-            if ("admin".equalsIgnoreCase(currentUserPermission)) {
-                sidebarAdminPane.toFront();
-                slideInAdmin.play();
-            } else {
-                sidebarPane.toFront();
-                slideInUser.play();
+            currentSlideOut = slideOutUser;
+            currentSlideIn = slideInUser;
+            currentSidebar = sidebarPane;
+        }
+
+        if (currentSidebar == null) {
+            System.err.println("Sidebar atual é nulo. Permissão ou FXML inválido.");
+            return;
+        }
+
+
+        if (isSidebarOpen) {
+            // Lógica para FECHAR o sidebar
+            if (currentSlideOut != null) {
+                currentSlideOut.play();
             }
-            overlayPane.toFront();
-            overlayPane.setVisible(true);
+
+            // Animação de fade-out para o overlayPane
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeOut.setFromValue(overlayPane.getOpacity());
+            fadeOut.setToValue(0.0); // Totalmente transparente
+            fadeOut.play();
+            fadeOut.setOnFinished(event -> {
+                overlayPane.setVisible(false); // Esconde o overlay após o fade
+                overlayPane.setMouseTransparent(true); // Torna transparente a cliques
+            });
+
+        } else {
+            // Lógica para ABRIR o sidebar
+            overlayPane.toFront(); // Coloca o overlay na frente de tudo (exceto o sidebar)
+            overlayPane.setVisible(true); // Torna o overlay visível
+            overlayPane.setMouseTransparent(false); // Permite cliques no overlay para fechar
+
+            // Animação de fade-in para o overlayPane
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeIn.setFromValue(overlayPane.getOpacity());
+            fadeIn.setToValue(0.4); // Exemplo: 40% de opacidade para escurecer a tela
+            fadeIn.play();
+
+            if (currentSidebar != null && currentSlideIn != null) {
+                currentSidebar.toFront(); // Coloca o sidebar na frente do overlay
+                currentSlideIn.play();
+            }
         }
         isSidebarOpen = !isSidebarOpen;
     }
 
-    // ================================================================
-    // MÉTODOS DE ACESSO AO BANCO DE DADOS ATRAVÉS DO UserDao
-    // ================================================================
-
     private void carregarUsuarios() {
         listaDeUsuarios.clear();
         try {
-            // CORREÇÃO AQUI: Chamando getAllUsers() do seu UserDao
             List<User> usuariosDoBanco = userDao.getAllUsers();
             listaDeUsuarios.addAll(usuariosDoBanco);
             mensagemStatus.setText("Usuários carregados do banco de dados.");
+            mensagemStatus.setStyle("-fx-text-fill: green;"); // Estilo para sucesso
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro ao Carregar Usuários", "Não foi possível carregar os usuários: " + e.getMessage());
             mensagemStatus.setText("Erro ao carregar usuários: " + e.getMessage());
+            mensagemStatus.setStyle("-fx-text-fill: red;"); // Estilo para erro
         } finally {
             tabelaUsuarios.refresh();
-            mensagemStatus.setVisible(true);
+            mensagemStatus.setVisible(true); // Garante que a mensagem fique visível após a operação
         }
     }
 
@@ -187,12 +264,9 @@ public class GestaoUsuariosController implements Initializable {
             return;
         }
 
-        // Idealmente, você implementaria um método de busca por termo no seu UserDao
-        // Ex: List<User> resultados = userDao.searchUsers(termoPesquisa);
-        // Por agora, filtramos na lista carregada, mas lembre-se da otimização para grandes dados.
         ObservableList<User> resultadosFiltrados = FXCollections.observableArrayList();
         for (User user : listaDeUsuarios) {
-            if (user.getFullName().toLowerCase().contains(termoPesquisa) || // Usando getFullName
+            if (user.getFullName().toLowerCase().contains(termoPesquisa) ||
                 user.getEmail().toLowerCase().contains(termoPesquisa) ||
                 user.getPermission().toLowerCase().contains(termoPesquisa)) {
                 resultadosFiltrados.add(user);
@@ -225,14 +299,15 @@ public class GestaoUsuariosController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    // CORREÇÃO AQUI: Chamando deleteUser(int userId) do seu UserDao
                     userDao.deleteUser(usuarioSelecionado.getId());
-                    listaDeUsuarios.remove(usuarioSelecionado); // Remove da ObservableList local
+                    listaDeUsuarios.remove(usuarioSelecionado);
                     mensagemStatus.setText("Usuário " + usuarioSelecionado.getFullName() + " removido com sucesso.");
+                    mensagemStatus.setStyle("-fx-text-fill: green;");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     showAlert(Alert.AlertType.ERROR, "Erro ao Remover Usuário", "Não foi possível remover o usuário: " + e.getMessage());
                     mensagemStatus.setText("Erro ao remover usuário: " + e.getMessage());
+                    mensagemStatus.setStyle("-fx-text-fill: red;");
                 } finally {
                     mensagemStatus.setVisible(true);
                 }
@@ -249,40 +324,52 @@ public class GestaoUsuariosController implements Initializable {
         mensagemStatus.setVisible(true);
     }
 
-    // ================================================================
-    // Métodos dos botões da Sidebar
-    // ================================================================
+    // --- Métodos de Navegação ---
+    // Agora, para navegar, vamos simplesmente chamar toggleSidebar() antes de carregar uma nova tela
+    // se o sidebar estiver aberto. Isso garante que ele se feche suavemente.
+    private void closeSidebarIfOpen() {
+        if (isSidebarOpen) {
+            toggleSidebar(); // Chama o toggle para fechar
+        }
+    }
 
     @FXML
     private void handleConsultarHoras(ActionEvent event) {
+        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
         ScreenManager.loadScreen((Node) event.getSource(), "MenuUser.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleRegistrarMarcacao(ActionEvent event) {
+        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
         ScreenManager.loadScreen((Node) event.getSource(), "RegistrarMarcacao.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleGestao(ActionEvent event) {
+        // Se já está na tela de gestão e o sidebar está aberto, apenas fecha-o.
+        // Se está na tela de gestão e o sidebar está fechado, não faz nada.
+        // Não é necessário carregar a mesma tela.
         if (isSidebarOpen) {
             toggleSidebar();
         }
-        // Já estamos na tela de Gestão de Usuários
     }
 
     @FXML
     private void handleCadastrar(ActionEvent event) {
+        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
         ScreenManager.loadScreen((Node) event.getSource(), "Cadastro.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleRelatorio(ActionEvent event) {
+        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
         showAlert(Alert.AlertType.INFORMATION, "Funcionalidade", "Exportar Relatório ainda não implementado.");
     }
 
     @FXML
     private void handleConfiguracoes(ActionEvent event) {
+        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
         ScreenManager.loadScreen((Node) event.getSource(), "Configuracoes.fxml", currentUserEmail, currentUserPermission);
     }
 
