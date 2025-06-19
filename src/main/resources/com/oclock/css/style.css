@@ -257,3 +257,31 @@
     -fx-border-radius: 6;
     -fx-background-radius: 6;
 }
+
+/* Estilos para botões de ação (Adicionar/Editar) */
+.action-button {
+    -fx-background-color: #28a745; /* Verde */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 8 15 8 15;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #218838;
+}
+
+/* Estilos para botões de exclusão */
+.delete-button {
+    -fx-background-color: #dc3545; /* Vermelho */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 8 15 8 15;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.delete-button:hover {
+    -fx-background-color: #c82333;
+}

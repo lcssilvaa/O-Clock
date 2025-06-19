@@ -1,6 +1,6 @@
 package com.oclock.controller;
 
-public class GerenciarUsuariosController {
+public class GestaoUsuariosController {
 	
     private String userEmail;
 	private String userPermission;

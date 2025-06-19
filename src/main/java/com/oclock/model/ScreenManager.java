@@ -4,7 +4,7 @@ import com.oclock.controller.HorasTrabalhadasController;
 import com.oclock.controller.MenuUserController;
 import com.oclock.controller.RelatoriosController;
 import com.oclock.controller.ConfiguracoesController;
-import com.oclock.controller.GerenciarUsuariosController;
+import com.oclock.controller.GestaoUsuariosController;
 import com.oclock.controller.CadastroController;
 
 import javafx.fxml.FXMLLoader;
@@ -26,8 +26,8 @@ public class ScreenManager {
             if (controller instanceof RelatoriosController) {
                 ((RelatoriosController) controller).initData(email, permission);
                 
-            } else if (controller instanceof GerenciarUsuariosController) {
-                ((GerenciarUsuariosController) controller).initData(email, permission);
+            } else if (controller instanceof GestaoUsuariosController) {
+                ((GestaoUsuariosController) controller).initData(email, permission);
             }
             else if (controller instanceof HorasTrabalhadasController) {
                 ((HorasTrabalhadasController) controller).initData(email, permission);

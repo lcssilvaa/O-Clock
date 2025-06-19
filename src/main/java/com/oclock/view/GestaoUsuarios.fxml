@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="rootPane" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oclock.controller.GestaoUsuariosController">
+   <stylesheets>
+      <URL value="@/com/oclock/css/style.css" />
+   </stylesheets>
+   <children>
+      <AnchorPane layoutX="0.0" layoutY="0.0" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #1a1c1d;">
+         <children>
+            <Label fx:id="mensagemPonto" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="423.0" prefHeight="17.0" prefWidth="325.0" text="Label" textAlignment="CENTER" visible="false" />
+
+            <VBox alignment="TOP_CENTER" layoutX="300.0" layoutY="80.0" prefHeight="500.0" prefWidth="580.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#handleAddUser" styleClass="action-button" text="Adicionar Usuário" />
+                        <Button mnemonicParsing="false" onAction="#handleEditUser" styleClass="action-button" text="Editar Usuário" />
+                        <Button mnemonicParsing="false" onAction="#handleDeleteUser" styleClass="delete-button" text="Excluir Usuário" />
+                     </children>
+                     <VBox.margin>
+                        <Insets right="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <TableView fx:id="usersTableView" prefHeight="400.0" prefWidth="570.0" VBox.vgrow="ALWAYS">
+                     <columns>
+                        <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" />
+                        <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Nome" />
+                        <TableColumn fx:id="emailColumn" prefWidth="200.0" text="Email" />
+                        <TableColumn fx:id="permissionColumn" prefWidth="150.0" text="Permissão" />
+                     </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+
+      <AnchorPane prefHeight="59.0" prefWidth="900.0" style="-fx-background-color: #26292a;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Text fill="WHITE" layoutX="54.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gestão de Usuários">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Text>
+            <ImageView fx:id="botaoMenu" fitHeight="25.0" fitWidth="29.0" layoutX="16.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/menu.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+         </children>
+         <effect>
+            <DropShadow height="255.0" radius="63.25" width="0.0">
+               <color>
+                  <Color opacity="0.5" />
+               </color>
+            </DropShadow>
+         </effect>
+      </AnchorPane>
+
+      <AnchorPane fx:id="overlayPane" onMouseClicked="#closeSidebar" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: black; -fx-opacity: 0.0;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+
+      <AnchorPane fx:id="sidebarPane" layoutX="-277.0" prefHeight="600.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;" visible="false">
+         <children>
+            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" text="Registrar marcação" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnConfiguracoes" layoutX="-31.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnSair" layoutX="-64.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Line endX="157.73306274414062" layoutX="110.0" layoutY="99.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="111.0" layoutY="140.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="183.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="226.0" startX="-100.0" stroke="#c0e0fc" />
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="22.0" layoutY="69.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/relogio.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="23.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/tap.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="24.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/configurações.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="25.0" layoutY="196.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/sair.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="24.0" fitWidth="29.0" layoutX="18.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/menu.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="36.0" fitWidth="126.0" layoutX="55.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/Logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+
+      <AnchorPane fx:id="sidebarAdminPane" layoutX="-277.0" prefHeight="600.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;" visible="false">
+         <children>
+            <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnRegistrarMarcacao" layoutX="-17.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleRegistrarMarcacao" prefHeight="36.0" prefWidth="259.0" text="Registrar marcação" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnGestao" layoutX="-16.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleGestao" prefHeight="36.0" prefWidth="259.0" text="Gestão de usuários" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnCadastrar" layoutX="-21.0" layoutY="186.0" mnemonicParsing="false" onAction="#handleCadastrar" prefHeight="36.0" prefWidth="259.0" text="Cadastrar usuário" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnRelatorio" layoutX="-19.0" layoutY="229.0" mnemonicParsing="false" onAction="#handleRelatorios" prefHeight="36.0" prefWidth="259.0" text="Exportar relatório" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnConfiguracoes" layoutX="-30.0" layoutY="274.0" mnemonicParsing="false" onAction="#handleConfiguracoes" prefHeight="36.0" prefWidth="259.0" text="Configurações" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="btnSair" layoutX="-63.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleSair" prefHeight="36.0" prefWidth="259.0" text="Sair" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Line endX="157.73306274414062" layoutX="110.0" layoutY="99.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="111.0" layoutY="140.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="183.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="226.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="269.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="112.0" layoutY="315.0" startX="-100.0" stroke="#c0e0fc" />
+            <Line endX="157.73306274414062" layoutX="113.0" layoutY="362.0" startX="-100.0" stroke="#c0e0fc" />
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="22.0" layoutY="69.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/relogio.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="23.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/tap.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="26.0" layoutY="153.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/gestao.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="21.0" fitWidth="20.0" layoutX="25.0" layoutY="194.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/cadastro.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="26.0" layoutY="239.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/relatorio.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="26.0" layoutY="284.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/configurações.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="27.0" layoutY="329.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/sair.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="24.0" fitWidth="29.0" layoutX="18.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/menu.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="36.0" fitWidth="126.0" layoutX="55.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/com/oclock/images/Logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
