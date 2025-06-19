@@ -30,7 +30,6 @@
                <children>
                   <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#handleAddUser" styleClass="action-button" text="Adicionar Usuário" />
                         <Button mnemonicParsing="false" onAction="#handleEditUser" styleClass="action-button" text="Editar Usuário" />
                         <Button mnemonicParsing="false" onAction="#handleDeleteUser" styleClass="delete-button" text="Excluir Usuário" />
                      </children>

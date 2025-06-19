@@ -117,13 +117,11 @@ public class RelatoriosController implements Initializable {
         LocalDate startDate = startDatePicker.getValue();
         LocalDate endDate = endDatePicker.getValue();
         
-        // O campo de email agora SEMPRE existirá e será visível, então podemos ler diretamente
+        
         String filterEmail = userEmailFilterField != null ? userEmailFilterField.getText().trim() : "";
 
-        // Sempre busca todos os registros, já que a tela é para ADMIN
         List<RegistroDiario> allRegistros = horasTrabalhadasService.buscarTodosRegistrosDiarios();
 
-        // Verificação de null para allRegistros antes de operar (PONTO DE ERRO ANTERIOR)
         if (allRegistros == null) {
             allRegistros = new ArrayList<>(); // Garante que a lista não é null
             System.err.println("AVISO: horasTrabalhadasService.buscarTodosRegistrosDiarios() retornou null. Inicializando como lista vazia.");

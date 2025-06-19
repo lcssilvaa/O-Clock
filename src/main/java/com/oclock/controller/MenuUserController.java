@@ -365,8 +365,8 @@ public class MenuUserController implements Initializable {
 
     @FXML
     private void handleGestao(ActionEvent event) {
-        System.out.println("Teste");
-        closeSidebar();
+    	closeSidebar();
+        ScreenManager.loadScreen((Node) event.getSource(), "GestaoUsuarios.fxml", userEmail, userPermission);
     }
 
     @FXML

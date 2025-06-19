@@ -1,50 +1,123 @@
 package com.oclock.model;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import java.time.LocalDateTime;
 
 public class User {
-    private final SimpleIntegerProperty id;
-    private final SimpleStringProperty nome;
-    private final SimpleStringProperty email;
-    private final SimpleStringProperty senha;
-    private final SimpleStringProperty permission;
-    
+    private int id;
+    private String email;
+    private String passwordHash; 
+    private String fullName;     
+    private String cpf;
+    private String permission;   
+    private boolean active;     
+    private LocalDateTime createdAt; 
+    private LocalDateTime updatedAt; 
 
-    public User(int id, String name, String email, String senha, String permission) {
-    	
-    	Criptografia crip = new Criptografia(); 
-        String senhaHash = crip.gerarHash(senha); 
-
-        this.id = new SimpleIntegerProperty(id);
-        this.nome = new SimpleStringProperty(name);
-        this.email = new SimpleStringProperty(email);
-        this.senha = new SimpleStringProperty(senhaHash);
-        this.permission = new SimpleStringProperty(permission);
+    public User(int id, String email, String passwordHash, String fullName, String cpf,
+                String permission, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.cpf = cpf;
+        this.permission = permission;
+        this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public User(String name, String email, String senha, String permission) {
-        this(0, name, email, senha, permission); // ID será gerado pelo banco
+    public User(String email, String passwordHash, String fullName, String cpf, String permission, boolean active) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.cpf = cpf;
+        this.permission = permission;
+        this.active = active;
     }
 
-    // Getters
-    public int getId() { return id.get(); }
-    public String getName() { return nome.get(); }
-    public String getEmail() { return email.get(); }
-    public String getPassword() { return senha.get(); }
-    public String getPermission() { return permission.get(); }
+    public int getId() {
+        return id;
+    }
 
-    // Setters
-    public void setId(int id) { this.id.set(id); }
-    public void setName(String name) { this.nome.set(name); }
-    public void setEmail(String email) { this.email.set(email); }
-    public void setPassword(String password) { this.senha.set(password); }
-    public void setPermission(String permission) { this.permission.set(permission); }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    // Propriedades para TableView
-    public SimpleIntegerProperty idProperty() { return id; }
-    public SimpleStringProperty nameProperty() { return nome; }
-    public SimpleStringProperty emailProperty() { return email; }
-    public SimpleStringProperty passwordProperty() { return senha; }
-    public SimpleStringProperty permissionProperty() { return permission; }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", email='" + email + '\'' +
+               ", fullName='" + fullName + '\'' +
+               ", cpf='" + cpf + '\'' +
+               ", permission='" + permission + '\'' +
+               ", active=" + active +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
+    }
 }
