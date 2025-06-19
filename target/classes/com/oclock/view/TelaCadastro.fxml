@@ -140,7 +140,7 @@
       </ImageView>
       <AnchorPane fx:id="overlayPane" prefHeight="609.0" prefWidth="335.0" style="-fx-background-color: #000000;" visible="false" />
 
-      <AnchorPane fx:id="sidebarPane" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;" visible="false">
+      <AnchorPane fx:id="sidebarPane" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
             <Button fx:id="listarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                <font>
@@ -211,7 +211,7 @@
          </children>
       </AnchorPane>
 
-      <AnchorPane fx:id="sidebarAdminPane" layoutX="1.0" layoutY="-3.0" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;" visible="false">
+      <AnchorPane fx:id="sidebarAdminPane" layoutX="1.0" layoutY="-3.0" prefHeight="609.0" prefWidth="277.0" style="-fx-background-color: #26292a; -fx-border-color: #26292a;">
          <children>
             <Button fx:id="btnConsultarHoras" layoutX="13.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleConsultarHoras" prefHeight="36.0" prefWidth="254.0" text="Consultar horas trabalhadas" textFill="WHITE">
                <font>

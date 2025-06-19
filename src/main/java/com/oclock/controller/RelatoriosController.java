@@ -17,11 +17,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox; 
-import javafx.util.Duration;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 // Importações para PDF (iText)
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -29,20 +30,25 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.kernel.colors.ColorConstants;
 
 // Importações para Excel (Apache POI)
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,25 +66,45 @@ public class RelatoriosController implements Initializable {
     @FXML private TextField userEmailFilterField;
     @FXML private Label statusLabel;
 
-    @FXML private VBox userEmailFilterVBox; 
+    @FXML private VBox userEmailFilterVBox;
 
-    private String userEmail; 
-    private String userPermission; 
+    private String userEmail;
+    private String userPermission;
     private boolean sidebarVisible = false;
 
     private HorasTrabalhadas horasTrabalhadasService;
 
     private List<RegistroDiario> currentFilteredRecords = new ArrayList<>();
 
+    /**
+     * Inicializa os dados do usuário (email e permissão) passados de outra tela.
+     * Atualiza a visibilidade do sidebar com base na permissão do usuário.
+     * Chama handleFilterData para carregar os dados iniciais.
+     * @param email O email do usuário logado.
+     * @param role A permissão (função) do usuário logado (ex: "admin", "usuario").
+     */
     public void initData(String email, String role) {
         this.userEmail = email;
         this.userPermission = role;
-        System.out.println("DEBUG (RelatoriosController): E-mail: " + userEmail + ", Permissão: " + userPermission);
+        if (userEmailFilterField != null) {
+            if ("admin".equalsIgnoreCase(userPermission)) {
+                userEmailFilterField.setEditable(true);
+                userEmailFilterField.setText(""); 
+            } else {
+                userEmailFilterField.setText(this.userEmail);
+                userEmailFilterField.setEditable(false);
+            }
+        }
         updateSidebarVisibility();
-
-        handleFilterData(null); 
+        handleFilterData(null); // Carrega os dados iniciais ao iniciar a tela
     }
-    
+
+    /**
+     * Método de inicialização do controlador, chamado automaticamente após o carregamento do FXML.
+     * Configura o estado inicial dos painéis do sidebar e overlay, e os seletores de data.
+     * @param url A localização usada para resolver caminhos relativos para o objeto raiz, ou null se a localização não for conhecida.
+     * @param resourceBundle Os recursos usados para localizar o objeto raiz, ou null se o objeto raiz não foi localizado.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (overlayPane != null) {
@@ -105,19 +131,28 @@ public class RelatoriosController implements Initializable {
 
         horasTrabalhadasService = new HorasTrabalhadas(0, null, null);
 
+        // Define as datas iniciais padrão (primeiro dia do mês atual até hoje)
         LocalDate today = LocalDate.now();
-        startDatePicker.setValue(today.withDayOfMonth(1));
-        endDatePicker.setValue(today);
+        if (startDatePicker != null) {
+            startDatePicker.setValue(today.withDayOfMonth(1));
+        }
+        if (endDatePicker != null) {
+            endDatePicker.setValue(today);
+        }
     }
-    
+
+    /**
+     * Lida com o evento de clique no botão de filtro de dados.
+     * Busca os registros de ponto com base nas datas e e-mail filtrados.
+     * @param event O evento de clique (pode ser nulo se chamado programaticamente).
+     */
     @FXML
     private void handleFilterData(ActionEvent event) {
-        statusLabel.setText("Buscando dados...");
-        
+        if (statusLabel != null) statusLabel.setText("Buscando dados...");
+
         LocalDate startDate = startDatePicker.getValue();
         LocalDate endDate = endDatePicker.getValue();
-        
-        
+
         String filterEmail = userEmailFilterField != null ? userEmailFilterField.getText().trim() : "";
 
         List<RegistroDiario> allRegistros = horasTrabalhadasService.buscarTodosRegistrosDiarios();
@@ -126,15 +161,12 @@ public class RelatoriosController implements Initializable {
             allRegistros = new ArrayList<>(); // Garante que a lista não é null
             System.err.println("AVISO: horasTrabalhadasService.buscarTodosRegistrosDiarios() retornou null. Inicializando como lista vazia.");
         }
-        
-        System.out.println("DEBUG: Registros totais carregados (antes de filtros de data/email): " + allRegistros.size());
 
         // Aplica o filtro de e-mail se o campo não estiver vazio
         if (!filterEmail.isEmpty()) {
-            System.out.println("DEBUG: Filtrando por email: '" + filterEmail + "'");
             allRegistros = allRegistros.stream()
-                                       .filter(r -> r.getEmailUsuario() != null && r.getEmailUsuario().equalsIgnoreCase(filterEmail))
-                                       .collect(Collectors.toList());
+                                     .filter(r -> r.getEmailUsuario() != null && r.getEmailUsuario().equalsIgnoreCase(filterEmail))
+                                     .collect(Collectors.toList());
         }
 
         // Aplica o filtro de data
@@ -149,21 +181,22 @@ public class RelatoriosController implements Initializable {
                 if (endDate != null && dataRegistro.isAfter(endDate)) {
                     passFilter = false;
                 }
-                
                 return passFilter;
             })
-            .sorted((r1, r2) -> r2.getData().compareTo(r1.getData()))
+            .sorted((r1, r2) -> r2.getData().compareTo(r1.getData())) // Ordena por data decrescente
             .collect(Collectors.toList());
 
         currentFilteredRecords = filteredAndSortedRecords;
-        
-        statusLabel.setText("Dados prontos para exportação: " + currentFilteredRecords.size() + " registros.");
-        System.out.println("DEBUG: " + currentFilteredRecords.size() + " registros filtrados para exportação.");
+
+        if (statusLabel != null) statusLabel.setText("Dados prontos para exportação: " + currentFilteredRecords.size() + " registros.");
     }
 
+    /**
+     * Lida com a exportação dos dados filtrados para um arquivo CSV.
+     * @param event O evento de clique do botão.
+     */
     @FXML
     private void handleExportCsv(ActionEvent event) {
-        System.out.println("DEBUG: Clicou em Exportar CSV.");
         if (currentFilteredRecords.isEmpty()) {
             showAlert(AlertType.INFORMATION, "Nenhum dado para exportar", "Não há registros de ponto para o período selecionado ou filtrado.");
             return;
@@ -193,24 +226,25 @@ public class RelatoriosController implements Initializable {
                         registro.getEmailUsuario() + "\n"
                     );
                 }
-                statusLabel.setText("Relatório CSV exportado com sucesso!");
-                System.out.println("DEBUG: Relatório CSV exportado com sucesso para: " + file.getAbsolutePath());
+                if (statusLabel != null) statusLabel.setText("Relatório CSV exportado com sucesso!");
                 showAlert(AlertType.INFORMATION, "Sucesso!", "Relatório CSV exportado com sucesso para:\n" + file.getAbsolutePath());
             } catch (IOException e) {
-                statusLabel.setText("Erro ao exportar CSV.");
+                if (statusLabel != null) statusLabel.setText("Erro ao exportar CSV.");
                 System.err.println("ERRO: Erro ao exportar relatório CSV: " + e.getMessage());
                 e.printStackTrace();
                 showAlert(AlertType.ERROR, "Erro na Exportação", "Ocorreu um erro ao exportar o relatório CSV:\n" + e.getMessage());
             }
         } else {
-            statusLabel.setText("Exportação CSV cancelada.");
-            System.out.println("DEBUG: Exportação CSV cancelada pelo usuário.");
+            if (statusLabel != null) statusLabel.setText("Exportação CSV cancelada.");
         }
     }
 
+    /**
+     * Lida com a exportação dos dados filtrados para um arquivo PDF.
+     * @param event O evento de clique do botão.
+     */
     @FXML
     private void handleExportPdf(ActionEvent event) {
-        System.out.println("DEBUG: Clicou em Exportar PDF.");
         if (currentFilteredRecords.isEmpty()) {
             showAlert(AlertType.INFORMATION, "Nenhum dado para exportar", "Não há registros de ponto para o período selecionado ou filtrado.");
             return;
@@ -241,7 +275,6 @@ public class RelatoriosController implements Initializable {
                         " a " +
                         (endDate != null ? endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "Fim");
 
-
                 document.add(new Paragraph(periodoStr)
                         .setTextAlignment(TextAlignment.CENTER)
                         .setFontSize(12)
@@ -266,7 +299,7 @@ public class RelatoriosController implements Initializable {
                 com.itextpdf.layout.Style cellStyle = new com.itextpdf.layout.Style()
                     .setFontSize(9)
                     .setTextAlignment(TextAlignment.CENTER);
-                
+
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -284,24 +317,25 @@ public class RelatoriosController implements Initializable {
                 document.add(table);
                 document.close();
 
-                statusLabel.setText("Relatório PDF exportado com sucesso!");
-                System.out.println("DEBUG: Relatório PDF exportado com sucesso para: " + file.getAbsolutePath());
+                if (statusLabel != null) statusLabel.setText("Relatório PDF exportado com sucesso!");
                 showAlert(AlertType.INFORMATION, "Sucesso!", "Relatório PDF exportado com sucesso para:\n" + file.getAbsolutePath());
             } catch (IOException e) {
-                statusLabel.setText("Erro ao exportar PDF.");
+                if (statusLabel != null) statusLabel.setText("Erro ao exportar PDF.");
                 System.err.println("ERRO: Erro ao exportar relatório PDF: " + e.getMessage());
                 e.printStackTrace();
                 showAlert(AlertType.ERROR, "Erro na Exportação", "Ocorreu um erro ao exportar o relatório PDF:\n" + e.getMessage());
             }
         } else {
-            statusLabel.setText("Exportação PDF cancelada.");
-            System.out.println("DEBUG: Exportação PDF cancelada pelo usuário.");
+            if (statusLabel != null) statusLabel.setText("Exportação PDF cancelada.");
         }
     }
 
+    /**
+     * Lida com a exportação dos dados filtrados para um arquivo Excel (XLSX).
+     * @param event O evento de clique do botão.
+     */
     @FXML
     private void handleExportExcel(ActionEvent event) {
-        System.out.println("DEBUG: Clicou em Exportar Excel.");
         if (currentFilteredRecords.isEmpty()) {
             showAlert(AlertType.INFORMATION, "Nenhum dado para exportar", "Não há registros de ponto para o período selecionado ou filtrado.");
             return;
@@ -339,7 +373,7 @@ public class RelatoriosController implements Initializable {
 
             for (RegistroDiario registro : currentFilteredRecords) {
                 Row row = sheet.createRow(rowNum++);
-                
+
                 String entradaStr = registro.getEntrada() != null ? registro.getEntrada().format(timeFormatter) : "";
                 String saidaStr = registro.getSaida() != null ? registro.getSaida().format(timeFormatter) : "Pendente";
 
@@ -356,11 +390,10 @@ public class RelatoriosController implements Initializable {
 
             try (FileOutputStream fileOut = new FileOutputStream(file)) {
                 workbook.write(fileOut);
-                statusLabel.setText("Relatório Excel exportado com sucesso!");
-                System.out.println("DEBUG: Relatório Excel exportado com sucesso para: " + file.getAbsolutePath());
+                if (statusLabel != null) statusLabel.setText("Relatório Excel exportado com sucesso!");
                 showAlert(AlertType.INFORMATION, "Sucesso!", "Relatório Excel exportado com sucesso para:\n" + file.getAbsolutePath());
             } catch (IOException e) {
-                statusLabel.setText("Erro ao exportar Excel.");
+                if (statusLabel != null) statusLabel.setText("Erro ao exportar Excel.");
                 System.err.println("ERRO: Erro ao escrever arquivo Excel: " + e.getMessage());
                 e.printStackTrace();
                 showAlert(AlertType.ERROR, "Erro na Exportação", "Ocorreu um erro ao exportar o relatório Excel:\n" + e.getMessage());
@@ -372,11 +405,16 @@ public class RelatoriosController implements Initializable {
                 }
             }
         } else {
-            statusLabel.setText("Exportação Excel cancelada.");
-            System.out.println("DEBUG: Exportação Excel cancelada pelo usuário.");
+            if (statusLabel != null) statusLabel.setText("Exportação Excel cancelada.");
         }
     }
 
+    /**
+     * Exibe uma caixa de diálogo de alerta para o usuário.
+     * @param type O tipo de alerta (INFORMATION, WARNING, ERROR, CONFIRMATION).
+     * @param title O título da janela de alerta.
+     * @param message A mensagem a ser exibida no corpo do alerta.
+     */
     private void showAlert(AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -385,7 +423,11 @@ public class RelatoriosController implements Initializable {
         alert.showAndWait();
     }
 
-
+    /**
+     * Atualiza a visibilidade e o gerenciamento de espaço dos sidebars com base na permissão do usuário.
+     * O sidebar de admin é mostrado se o usuário for admin, caso contrário, o sidebar padrão é mostrado.
+     * Também ajusta a visibilidade e editabilidade do campo de filtro de e-mail.
+     */
     private void updateSidebarVisibility() {
         AnchorPane userSidebar = sidebarPane;
         AnchorPane adminSidebar = sidebarAdminPane;
@@ -395,47 +437,66 @@ public class RelatoriosController implements Initializable {
             return;
         }
 
+        // Primeiro, desabilita e esconde ambos
         userSidebar.setVisible(false);
         userSidebar.setManaged(false);
         userSidebar.setMouseTransparent(true);
+        userSidebar.setTranslateX(-userSidebar.getPrefWidth()); // Garante que esteja escondido
 
         adminSidebar.setVisible(false);
         adminSidebar.setManaged(false);
         adminSidebar.setMouseTransparent(true);
+        adminSidebar.setTranslateX(-adminSidebar.getPrefWidth()); // Garante que esteja escondido
 
-        if ("admin".equals(userPermission)) {
-            adminSidebar.setVisible(true);
-            adminSidebar.setManaged(true);
-            sidebarAdminPane.setMouseTransparent(false);
-            
-            if (!sidebarVisible) { 
-                sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
-            	}
-            } else {
-            userSidebar.setVisible(true);
-            userSidebar.setManaged(true);
-        }
-        if (!sidebarVisible) {
-            userSidebar.setTranslateX(-userSidebar.getPrefWidth());
-            adminSidebar.setTranslateX(-adminSidebar.getPrefWidth());
-            sidebarPane.setMouseTransparent(false);
-            if (!sidebarVisible) {
-                sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+        // Controla a visibilidade do campo de filtro de e-mail
+        if (userEmailFilterVBox != null) {
+            boolean isAdmin = "admin".equalsIgnoreCase(userPermission);
+            userEmailFilterVBox.setVisible(isAdmin);
+            userEmailFilterVBox.setManaged(isAdmin);
+
+            if (userEmailFilterField != null) {
+                if (isAdmin) {
+                    userEmailFilterField.setText(""); // Admins podem filtrar por qualquer e-mail
+                    userEmailFilterField.setEditable(true);
+                } else {
+                    userEmailFilterField.setText(this.userEmail); // Usuários comuns só veem seus próprios registros
+                    userEmailFilterField.setEditable(false);
+                }
             }
         }
+
+        // Ativa o sidebar correto
+        if ("admin".equalsIgnoreCase(userPermission)) {
+            adminSidebar.setVisible(true);
+            adminSidebar.setManaged(true);
+            adminSidebar.setMouseTransparent(false);
+        } else {
+            userSidebar.setVisible(true);
+            userSidebar.setManaged(true);
+            userSidebar.setMouseTransparent(false);
+        }
+        // As transições de TranslateX para mostrar/esconder o sidebar são feitas no handleMenuButtonClick/closeSidebar
     }
 
+    /**
+     * Retorna o AnchorPane do sidebar ativo com base na permissão do usuário.
+     * @return O AnchorPane do sidebar de admin se o usuário for admin, caso contrário, o sidebar padrão.
+     */
     private AnchorPane getActiveSidebarPane() {
-        if ("admin".equals(userPermission)) {
+        if ("admin".equalsIgnoreCase(userPermission)) {
             return sidebarAdminPane;
         } else {
             return sidebarPane;
         }
     }
 
+    /**
+     * Lida com o evento de clique no botão de menu (geralmente um ícone).
+     * Abre o sidebar com uma animação de deslizamento e escurece o overlay.
+     * @param event O evento de clique do mouse.
+     */
     @FXML
     private void handleMenuButtonClick(MouseEvent event) {
-        System.out.println("handleMenuButtonClick: Botão de menu clicado em Relatorios!");
         AnchorPane activeSidebar = getActiveSidebarPane();
 
         if (overlayPane != null) {
@@ -458,11 +519,19 @@ public class RelatoriosController implements Initializable {
         sidebarVisible = true;
     }
 
+    /**
+     * Lida com o evento de clique no overlayPane (a área escurecida da tela).
+     * Fecha o sidebar se ele estiver aberto.
+     * @param event O evento de clique do mouse.
+     */
     @FXML
     private void handleOverlayClick(MouseEvent event) {
         closeSidebar();
     }
 
+    /**
+     * Fecha o sidebar ativo com uma animação de deslizamento e clareia o overlay.
+     */
     private void closeSidebar() {
         AnchorPane activeSidebar = getActiveSidebarPane();
 
@@ -489,6 +558,8 @@ public class RelatoriosController implements Initializable {
         }
         sidebarVisible = false;
     }
+
+    // --- Métodos de Navegação (Menu Lateral/Sidebar) ---
 
     @FXML
     private void handleConsultarHoras(ActionEvent event) {
@@ -517,7 +588,7 @@ public class RelatoriosController implements Initializable {
     @FXML
     private void handleGestao(ActionEvent event) {
         closeSidebar();
-        ScreenManager.loadScreen((Node) event.getSource(), "GerenciarUsuarios.fxml", userEmail, userPermission);
+        ScreenManager.loadScreen((Node) event.getSource(), "GestaoUsuarios.fxml", userEmail, userPermission);
     }
 
     @FXML
@@ -529,6 +600,6 @@ public class RelatoriosController implements Initializable {
     @FXML
     private void handleCadastrar(ActionEvent event) {
         closeSidebar();
-        ScreenManager.loadScreen((Node) event.getSource(), "Cadastro.fxml", userEmail, userPermission);
+        ScreenManager.loadScreen((Node) event.getSource(), "TelaCadastro.fxml", userEmail, userPermission);
     }
 }

@@ -1,17 +1,12 @@
 package com.oclock.controller;
 
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -24,20 +19,18 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import java.io.IOException;
+
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-import com.oclock.model.BaterPonto;
 import com.oclock.model.Cadastro;
+import com.oclock.model.ScreenManager;
 
 public class CadastroController implements Initializable {
 
+    // --- Elementos FXML injetados ---
     @FXML
     private ImageView botaoMenu;
 
@@ -47,7 +40,7 @@ public class CadastroController implements Initializable {
     private AnchorPane sidebarPane;
     @FXML
     private AnchorPane sidebarAdminPane;
-    
+
     @FXML
     private TextField campoNome;
     @FXML
@@ -65,13 +58,31 @@ public class CadastroController implements Initializable {
     @FXML
     private ToggleGroup permissaoToggleGroup;
 
+    // --- Serviços e estados do controlador ---
     private Cadastro cadastroService = new Cadastro();
-    
-    private Timeline timeline;
     private String userEmail, userPermission;
+    private boolean isSidebarOpen = false;
 
-    private boolean sidebarVisible = false;
+    // --- Transições de animação para o sidebar ---
+    private TranslateTransition slideInAdmin;
+    private TranslateTransition slideOutAdmin;
+    private TranslateTransition slideInUser;
+    private TranslateTransition slideOutUser;
 
+    /**
+     * Construtor padrão da classe CadastroController.
+     * Inicializa a instância do serviço de cadastro.
+     */
+    public CadastroController() {
+        this.cadastroService = new Cadastro();
+    }
+
+    /**
+     * Recebe e inicializa os dados do usuário (e-mail e permissão) passados de outra tela.
+     * Também chama o método para atualizar a visibilidade do sidebar.
+     * @param email O e-mail do usuário logado.
+     * @param role A permissão (função) do usuário logado (ex: "admin", "usuario").
+     */
     public void initData(String email, String role) {
         this.userEmail = email;
         this.userPermission = role;
@@ -79,42 +90,89 @@ public class CadastroController implements Initializable {
         updateSidebarVisibility();
     }
 
+    /**
+     * Método de inicialização do controlador, chamado automaticamente após o carregamento do FXML.
+     * Configura o estado inicial dos painéis do sidebar e overlay, e as transições de animação.
+     * Também configura os listeners de eventos e a validação inicial dos campos.
+     * @param url A localização usada para resolver caminhos relativos para o objeto raiz, ou null se a localização não for conhecida.
+     * @param resourceBundle Os recursos usados para localizar o objeto raiz, ou null se o objeto raiz não foi localizado.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-    	if (overlayPane != null) {
+        // Inicializa o overlayPane
+        if (overlayPane != null) {
             overlayPane.setVisible(false);
             overlayPane.setOpacity(0.0);
             overlayPane.setOnMouseClicked(this::handleOverlayClick);
-            System.out.println("DEBUG: overlayPane configurado.");
         } else {
             System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
         }
 
+        // Inicializa sidebarPane (usuário)
         if (sidebarPane != null) {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
             sidebarPane.setVisible(false);
             sidebarPane.setManaged(false);
+            slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideInUser.setToX(0);
+            slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideOutUser.setToX(-sidebarPane.getPrefWidth());
+        } else {
+            System.err.println("ERRO: sidebarPane é NULO. Verifique o fx:id no FXML.");
         }
+
+        // Inicializa sidebarAdminPane (administrador)
         if (sidebarAdminPane != null) {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
-            System.out.println("DEBUG (MenuUserController): sidebarAdminPane inicializado (largura: " + sidebarAdminPane.getPrefWidth() + ").");
+            slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideInAdmin.setToX(0);
+            slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideOutAdmin.setToX(-sidebarAdminPane.getPrefWidth());
+        } else {
+            System.err.println("ERRO: sidebarAdminPane é NULO. Verifique o fx:id no FXML.");
         }
 
-        botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
-        overlayPane.setOnMouseClicked(this::handleOverlayClick);
+        // Define o handler para o botão de menu
+        if (botaoMenu != null) {
+            botaoMenu.setOnMouseClicked(this::handleMenuButtonClick);
+        } else {
+            System.err.println("ERRO: botaoMenu é NULO. Verifique o fx:id no FXML.");
+        }
 
+        // Configura o ToggleGroup para os RadioButtons
+        if (userUsuarioRadio != null && userAdminRadio != null) {
+            permissaoToggleGroup = new ToggleGroup();
+            userUsuarioRadio.setToggleGroup(permissaoToggleGroup);
+            userAdminRadio.setToggleGroup(permissaoToggleGroup);
+            userUsuarioRadio.setSelected(true); // Define um valor padrão
+        } else {
+            System.err.println("ERRO: RadioButtons de permissão não estão injetados. Verifique o fx:id no FXML.");
+        }
+
+        // Oculta a mensagem de erro no início
+        if (mensagemErro != null) {
+            mensagemErro.setVisible(false);
+            mensagemErro.setManaged(false);
+        }
     }
 
+    // --- Métodos de Controle do Sidebar ---
+
+    /**
+     * Atualiza a visibilidade e o gerenciamento de espaço dos sidebars com base na permissão do usuário.
+     * O sidebar de admin é mostrado se o usuário for admin, caso contrário, o sidebar padrão é mostrado.
+     */
     private void updateSidebarVisibility() {
         if (sidebarPane == null || sidebarAdminPane == null) {
-            System.err.println("Erro: Painéis do sidebar FXML não injetados em MenuUserController.");
+            System.err.println("Erro: Painéis do sidebar FXML não injetados em CadastroController.");
             return;
         }
 
         if (userPermission == null) {
-            System.err.println("Erro: Permissão do usuário não definida em MenuUserController para configurar sidebar.");
+            System.err.println("Erro: Permissão do usuário não definida em CadastroController para configurar sidebar.");
+            // Default para usuário comum se a permissão não for definida
             sidebarPane.setVisible(true);
             sidebarPane.setManaged(true);
             sidebarAdminPane.setVisible(false);
@@ -123,213 +181,130 @@ public class CadastroController implements Initializable {
         }
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
-        System.out.println("DEBUG: É Admin? " + isAdmin);
 
         if (isAdmin) {
-        	System.out.println("DEBUG: Ativando sidebarAdminPane.");
             sidebarAdminPane.setVisible(true);
-            sidebarAdminPane.setManaged(true);;
-
+            sidebarAdminPane.setManaged(true);
             sidebarPane.setVisible(false);
             sidebarPane.setManaged(false);
         } else {
-        	System.out.println("DEBUG: Ativando sidebarPane.");
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
+            sidebarPane.setVisible(true);
+            sidebarPane.setManaged(true);
         }
-        System.out.println("DEBUG: updateSidebarVisibility() finalizado.");
     }
 
+    /**
+     * Retorna o AnchorPane do sidebar ativo com base na permissão do usuário.
+     * @return O AnchorPane do sidebar de admin se o usuário for admin, caso contrário, o sidebar padrão.
+     */
     private AnchorPane getActiveSidebarPane() {
         boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
         return isAdmin ? sidebarAdminPane : sidebarPane;
     }
 
-    private void handleMenuButtonClick(MouseEvent event) {
-    	System.out.println("--- handleMenuButtonClick: INÍCIO ---");
-        System.out.println("DEBUG (handleMenuButtonClick): Botão de menu clicado!");
-        
+    /**
+     * Alterna a visibilidade e animação de deslizamento do sidebar e o fade do overlay.
+     * Se o sidebar estiver aberto, ele fecha; se estiver fechado, ele abre.
+     */
+    private void toggleSidebar() {
+        if (overlayPane == null) {
+            System.err.println("OverlayPane não está injetado. Verifique o FXML.");
+            return;
+        }
+
         AnchorPane activeSidebar = getActiveSidebarPane();
+        TranslateTransition currentSlideTransition = null;
 
         if (activeSidebar == null) {
-            System.err.println("ERRO (handleMenuButtonClick): activeSidebar é NULO APÓS getActiveSidebarPane(). Abortando animação.");
-            return; 
+            System.err.println("ERRO: activeSidebar é NULO. Permissão ou FXML inválido.");
+            return;
         }
 
-        System.out.println("DEBUG: activeSidebar detectado: " + (activeSidebar == sidebarAdminPane ? "sidebarAdminPane" : "sidebarPane"));
-        System.out.println("DEBUG: Propriedades INICIAIS do activeSidebar antes da animação:");
-        System.out.println("   Visible: " + activeSidebar.isVisible());
-        System.out.println("   Managed: " + activeSidebar.isManaged());
-        System.out.println("   TranslateX: " + activeSidebar.getTranslateX());
+        if (isSidebarOpen) { // Se o sidebar está aberto, fecha
+            currentSlideTransition = "admin".equalsIgnoreCase(userPermission) ? slideOutAdmin : slideOutUser;
 
-        if (overlayPane != null) {
-            overlayPane.setVisible(true);
-            overlayPane.setMouseTransparent(false); 
-            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(0.3), overlayPane);
-            fadeTransition.setFromValue(overlayPane.getOpacity());
-            fadeTransition.setToValue(0.4);
-            fadeTransition.play();
-            System.out.println("DEBUG (handleMenuButtonClick): Animação do overlay iniciada.");
-        } else {
-            System.err.println("ERRO (handleMenuButtonClick): overlayPane é NULO. Animação do overlay falhou.");
-        }
+            if (currentSlideTransition != null) {
+                currentSlideTransition.play();
+                currentSlideTransition.setOnFinished(e -> {
+                    activeSidebar.setVisible(false);
+                    activeSidebar.setManaged(false);
+                });
+            }
 
-        activeSidebar.setVisible(true); 
-        activeSidebar.setManaged(true);
-        System.out.println("DEBUG (handleMenuButtonClick): activeSidebar definido como Visible=true, Managed=true.");
-
-        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
-        translateTransition.setToX(0);
-        translateTransition.play();
-        
-        translateTransition.setOnFinished(e -> {
-            System.out.println("DEBUG (handleMenuButtonClick): Animação da sidebar CONCLUÍDA.");
-            System.out.println("DEBUG (handleMenuButtonClick): Propriedades FINAIS do activeSidebar APÓS ANIMAÇÃO:");
-            System.out.println("   Visible: " + activeSidebar.isVisible());
-            System.out.println("   Managed: " + activeSidebar.isManaged());
-            System.out.println("   TranslateX: " + activeSidebar.getTranslateX());
-        });
-        
-        System.out.println("DEBUG (handleMenuButtonClick): Animação da sidebar INICIADA.");
-        sidebarVisible = true;
-        System.out.println("--- handleMenuButtonClick: FIM ---");
-    }
-
-    private void handleOverlayClick(MouseEvent event) {
-        closeSidebar();
-    }
-
-    private void closeSidebar() {
-        AnchorPane activeSidebar = getActiveSidebarPane();
-
-        FadeTransition fadeTransition1 = new FadeTransition(Duration.seconds(0.3), overlayPane);
-        fadeTransition1.setFromValue(overlayPane.getOpacity());
-        fadeTransition1.setToValue(0);
-        fadeTransition1.play();
-        fadeTransition1.setOnFinished(event1 -> {
-            overlayPane.setVisible(false);
-        });
-
-        if (activeSidebar != null) {
-            TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.3), activeSidebar);
-            translateTransition1.setToX(-activeSidebar.getPrefWidth());
-            translateTransition1.play();
-            translateTransition1.setOnFinished(event -> {
-                activeSidebar.setVisible(false);
-                activeSidebar.setManaged(false);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeOut.setFromValue(overlayPane.getOpacity());
+            fadeOut.setToValue(0.0);
+            fadeOut.play();
+            fadeOut.setOnFinished(event -> {
+                overlayPane.setVisible(false);
+                overlayPane.setMouseTransparent(true);
             });
-        }
-        sidebarVisible = false;
-    }
-    
-    @FXML
-    private void handleRegistrarMarcacao(ActionEvent event) {
-        System.out.println("Clicou em Registrar Marcação (no sidebar da tela de Horas Trabalhadas).");
-        closeSidebar();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/MenuUser.fxml"));
-            Parent root = loader.load();
 
-            MenuUserController controller = loader.getController();
-            if (controller != null) {
-                controller.initData(userEmail, userPermission);
+        } else { // Se o sidebar está fechado, abre
+            overlayPane.toFront();
+            overlayPane.setVisible(true);
+            overlayPane.setMouseTransparent(false);
+
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), overlayPane);
+            fadeIn.setFromValue(overlayPane.getOpacity());
+            fadeIn.setToValue(0.4);
+            fadeIn.play();
+
+            currentSlideTransition = "admin".equalsIgnoreCase(userPermission) ? slideInAdmin : slideInUser;
+
+            if (activeSidebar != null && currentSlideTransition != null) {
+                activeSidebar.toFront();
+                activeSidebar.setVisible(true);
+                activeSidebar.setManaged(true);
+                currentSlideTransition.play();
             }
+        }
+        isSidebarOpen = !isSidebarOpen;
+    }
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("OnClock - Bater Ponto");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar MenuUser.fxml para registrar marcação: " + e.getMessage());
-            e.printStackTrace();
+    /**
+     * Lida com o evento de clique no botão de menu (geralmente um ícone).
+     * Chama o método para alternar o estado do sidebar (abrir/fechar).
+     * @param event O evento de clique do mouse.
+     */
+    @FXML
+    private void handleMenuButtonClick(MouseEvent event) {
+        toggleSidebar();
+    }
+
+    /**
+     * Lida com o evento de clique no overlayPane (a área escurecida da tela).
+     * Fecha o sidebar se ele estiver aberto.
+     * @param event O evento de clique do mouse.
+     */
+    private void handleOverlayClick(MouseEvent event) {
+        if (isSidebarOpen) {
+            toggleSidebar();
         }
     }
 
-    @FXML
-    private void handleSair(ActionEvent event) {
-        System.out.println("Clicou em Sair");
-        closeSidebar();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/TelaLogin.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("OnClock - Login");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar TelaLogin.fxml ao sair: " + e.getMessage());
-            e.printStackTrace();
+    /**
+     * Método auxiliar que verifica se o sidebar está aberto e o fecha.
+     * Utilizado antes de navegar para uma nova tela para garantir uma transição suave.
+     */
+    private void closeSidebarIfOpen() {
+        if (isSidebarOpen) {
+            toggleSidebar();
         }
     }
 
-    @FXML
-    private void handleConsultarHoras(ActionEvent event) {
-        System.out.println("Clicou em Registro de Ponto");
-        closeSidebar();
+    // --- Métodos de Ação do Formulário de Cadastro ---
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/RegistrosPonto.fxml"));
-            Parent root = loader.load();
-
-            HorasTrabalhadasController registroController = loader.getController();
-            if (registroController != null) {
-                registroController.initData(userEmail, userPermission);
-            } else {
-                System.err.println("Erro: Controlador da RegistroPonto.fxml não encontrado.");
-            }
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("OnClock - Registro de Ponto");
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar RegistroPonto.fxml: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleConfiguracoes(ActionEvent event) {
-        System.out.println("Clicou em Configurações");
-        closeSidebar();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/oclock/view/Configuracoes.fxml"));
-            Parent root = loader.load();
-
-            ConfiguracoesController controller = loader.getController();
-            if (controller != null) {
-                controller.initData(userEmail, userPermission);
-            }
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("OnClock - Configurações");
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar Configurações.fxml para registrar marcação: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleGestao(ActionEvent event) {
-        System.out.println("Teste");
-        closeSidebar();
-    }
-    
-    public CadastroController() {
-    	this.cadastroService = new Cadastro();
-    }
-
+    /**
+     * Lida com o evento de clique no botão "Cadastrar Usuário" no formulário principal.
+     * Coleta os dados dos campos, valida-os e tenta cadastrar um novo usuário no banco de dados.
+     * Exibe mensagens de sucesso ou erro ao usuário.
+     * @param event O evento de ação.
+     */
     @FXML
     private void cadastrarUsuario(ActionEvent event) {
-    	System.out.println("DEBUG: botão cadastrar apertado!");
-       
         if (campoNome == null || campoEmail == null || campoSenha == null || campoCPF == null ||
             userUsuarioRadio == null || userAdminRadio == null || mensagemErro == null) {
             System.err.println("ERRO: Nem todos os campos de cadastro estão mapeados no FXML. Verifique os fx:id.");
@@ -343,9 +318,9 @@ public class CadastroController implements Initializable {
         String cpf = campoCPF.getText();
 
         String permissao = "";
-        
+
         if (permissaoToggleGroup.getSelectedToggle() == userUsuarioRadio) {
-            permissao = "usuario"; 
+            permissao = "usuario";
         } else if (permissaoToggleGroup.getSelectedToggle() == userAdminRadio) {
             permissao = "admin";
         } else {
@@ -353,7 +328,6 @@ public class CadastroController implements Initializable {
             return;
         }
 
-        
         if (nome.isEmpty() || email.isEmpty() || senha.isEmpty() || cpf.isEmpty()) {
             exibirMensagem("Todos os campos são obrigatórios!", Color.RED);
             return;
@@ -363,12 +337,12 @@ public class CadastroController implements Initializable {
             exibirMensagem("CPF deve conter exatamente 11 dígitos numéricos.", Color.RED);
             return;
         }
-        
-        if(senha.length() > 8 && senha.length() < 15) {
-        	exibirMensagem("A senha deve conter mais que 8 caracteres e menos que 15", Color.RED);
-        	return;
+
+        if (senha.length() < 8 || senha.length() > 15) {
+            exibirMensagem("A senha deve conter entre 8 e 15 caracteres.", Color.RED);
+            return;
         }
-        
+
         if (!senha.matches(".*[A-Z].*")) {
             exibirMensagem("A senha deve conter pelo menos uma letra maiúscula.", Color.RED);
             return;
@@ -381,11 +355,11 @@ public class CadastroController implements Initializable {
             exibirMensagem("A senha deve conter pelo menos um número.", Color.RED);
             return;
         }
-        
-        if (!senha.matches(".*[!@#$%^&*()-+=].*")) {
+
+        if (!senha.matches(".*[!@#$%^&*()\\-+=].*")) {
             exibirMensagem("A senha deve conter pelo menos um caractere especial (!@#$%^&*()-+=).", Color.RED);
             return;
-       }
+        }
 
         if (!email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
             exibirMensagem("Formato de e-mail inválido.", Color.RED);
@@ -414,6 +388,11 @@ public class CadastroController implements Initializable {
         }
     }
 
+    /**
+     * Exibe uma mensagem de status (sucesso ou erro) na interface do usuário.
+     * @param mensagem O texto da mensagem a ser exibida.
+     * @param cor A cor do texto da mensagem.
+     */
     private void exibirMensagem(String mensagem, Color cor) {
         if (mensagemErro != null) {
             mensagemErro.setText(mensagem);
@@ -423,6 +402,10 @@ public class CadastroController implements Initializable {
         }
     }
 
+    /**
+     * Limpa todos os campos de entrada do formulário de cadastro.
+     * Oculta a mensagem de erro/sucesso após a limpeza.
+     */
     private void limparCampos() {
         if (campoNome != null) campoNome.clear();
         if (campoEmail != null) campoEmail.clear();
@@ -435,17 +418,55 @@ public class CadastroController implements Initializable {
             mensagemErro.setManaged(false);
         }
     }
-    
+
+    @FXML
+    private void handleRegistrarMarcacao(ActionEvent event) {
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "MenuUser.fxml", userEmail, userPermission);
+    }
+
+    @FXML
+    private void handleConsultarHoras(ActionEvent event) {
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "RegistrosPonto.fxml", userEmail, userPermission);
+    }
+
+    @FXML
+    private void handleConfiguracoes(ActionEvent event) {
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "Configuracoes.fxml", userEmail, userPermission);
+    }
+
+    @FXML
+    private void handleGestao(ActionEvent event) {
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "GestaoUsuarios.fxml", userEmail, userPermission);
+    }
+
     @FXML
     private void handleCadastrar(ActionEvent event) {
-        System.out.println("Clicou em Consultar Horas Trabalhadas (já nesta tela).");
-        closeSidebar();
- 
+        if (isSidebarOpen) {
+            toggleSidebar();
+        }
     }
 
     @FXML
     private void handleRelatorio(ActionEvent event) {
-        System.out.println("Teste");
-        closeSidebar();
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "Relatorios.fxml", userEmail, userPermission);
+    }
+
+    @FXML
+    private void handleSair(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de Saída");
+        alert.setHeaderText("Você está prestes a sair.");
+        alert.setContentText("Deseja realmente sair da aplicação?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            ScreenManager.loadScreen((Node) event.getSource(), "TelaLogin.fxml", null, null);
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        }
     }
 }

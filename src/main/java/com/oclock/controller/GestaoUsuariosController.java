@@ -5,7 +5,7 @@ import com.oclock.dao.UserDAO;
 import com.oclock.model.User;
 
 import javafx.animation.TranslateTransition;
-import javafx.animation.FadeTransition; // Importe FadeTransition
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
 
 public class GestaoUsuariosController implements Initializable {
 
+    // --- Elementos FXML injetados ---
     @FXML
     private AnchorPane mainContentPane;
     @FXML
@@ -41,7 +42,7 @@ public class GestaoUsuariosController implements Initializable {
     @FXML
     private AnchorPane sidebarPane;
     @FXML
-    private AnchorPane overlayPane; // Este será o painel que cobre a tela
+    private AnchorPane overlayPane;
     @FXML
     private ImageView botaoMenu;
     @FXML
@@ -66,19 +67,28 @@ public class GestaoUsuariosController implements Initializable {
     @FXML
     private Button btnAtualizarTabela;
 
+    // --- Variáveis de estado do controlador ---
     private String currentUserEmail;
     private String currentUserPermission;
+    private boolean isSidebarOpen = false;
 
+    // --- Transições de animação para o sidebar ---
     private TranslateTransition slideInAdmin;
     private TranslateTransition slideOutAdmin;
     private TranslateTransition slideInUser;
     private TranslateTransition slideOutUser;
-    private boolean isSidebarOpen = false;
 
     private ObservableList<User> listaDeUsuarios = FXCollections.observableArrayList();
-
     private UserDAO userDao;
 
+    /**
+     * Método de inicialização do controlador, chamado automaticamente após o carregamento do FXML.
+     * Configura o estado inicial dos painéis do sidebar e overlay, e as transições de animação.
+     * Configura as células da tabela, inicializa o DAO e carrega os usuários.
+     * Também configura os listeners de eventos para os botões da tela.
+     * @param url A localização usada para resolver caminhos relativos para o objeto raiz, ou null se a localização não for conhecida.
+     * @param resourceBundle Os recursos usados para localizar o objeto raiz, ou null se o objeto raiz não foi localizado.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inicializa sidebars fora da tela e os oculta/desabilita o gerenciamento
@@ -86,6 +96,10 @@ public class GestaoUsuariosController implements Initializable {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
+            slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideInAdmin.setToX(0);
+            slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
+            slideOutAdmin.setToX(-sidebarAdminPane.getPrefWidth());
         } else {
             System.err.println("ERRO: sidebarAdminPane é NULO. Verifique o fx:id no FXML.");
         }
@@ -93,36 +107,31 @@ public class GestaoUsuariosController implements Initializable {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
             sidebarPane.setVisible(false);
             sidebarPane.setManaged(false);
+            slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideInUser.setToX(0);
+            slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
+            slideOutUser.setToX(-sidebarPane.getPrefWidth());
         } else {
             System.err.println("ERRO: sidebarPane é NULO. Verifique o fx:id no FXML.");
         }
 
         // Inicializa o overlay
         if (overlayPane != null) {
-            overlayPane.setVisible(false); // Começa invisível
-            overlayPane.setOpacity(0.0);   // Começa totalmente transparente
-            // O clique no overlay deve fechar o sidebar
+            overlayPane.setVisible(false);
+            overlayPane.setOpacity(0.0);
             overlayPane.setOnMouseClicked(event -> toggleSidebar());
         } else {
             System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
         }
 
-        // Configuração das transições (Verificar nulidade para evitar NullPointerException)
-        if (sidebarAdminPane != null) {
-            slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
-            slideInAdmin.setToX(0);
-            slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
-            slideOutAdmin.setToX(-sidebarAdminPane.getPrefWidth());
+        // Define o handler para o botão de menu
+        if (botaoMenu != null) {
+            botaoMenu.setOnMouseClicked(this::handleMenuButton);
+        } else {
+            System.err.println("ERRO: botaoMenu é NULO. Verifique o fx:id no FXML.");
         }
 
-        if (sidebarPane != null) {
-            slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-            slideInUser.setToX(0);
-            slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
-            slideOutUser.setToX(-sidebarPane.getPrefWidth());
-        }
-
-        // Correção aqui: colunaEmail.setCellValueFactory (sem o .PropertyFactory)
+        // Configuração das colunas da tabela de usuários
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colunaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colunaPermissao.setCellValueFactory(new PropertyValueFactory<>("permission"));
@@ -131,18 +140,30 @@ public class GestaoUsuariosController implements Initializable {
 
         userDao = new UserDAO();
 
-        carregarUsuarios();
+        carregarUsuarios(); // Carrega os usuários ao inicializar a tela
 
         // Inicia a mensagem de status invisível
-        mensagemStatus.setText("");
-        mensagemStatus.setVisible(false);
+        if (mensagemStatus != null) {
+            mensagemStatus.setText("");
+            mensagemStatus.setVisible(false);
+        } else {
+            System.err.println("ERRO: mensagemStatus é NULO. Verifique o fx:id no FXML.");
+        }
 
-        btnPesquisar.setOnAction(this::handlePesquisarUsuario);
-        btnEditarUsuario.setOnAction(this::handleEditarUsuario);
-        btnRemoverUsuario.setOnAction(this::handleRemoverUsuario);
-        btnAtualizarTabela.setOnAction(this::handleAtualizarTabela);
+
+        // Configura os listeners de eventos para os botões da interface principal
+        if (btnPesquisar != null) btnPesquisar.setOnAction(this::handlePesquisarUsuario);
+        if (btnEditarUsuario != null) btnEditarUsuario.setOnAction(this::handleEditarUsuario);
+        if (btnRemoverUsuario != null) btnRemoverUsuario.setOnAction(this::handleRemoverUsuario);
+        if (btnAtualizarTabela != null) btnAtualizarTabela.setOnAction(this::handleAtualizarTabela);
     }
 
+    /**
+     * Recebe e inicializa os dados do usuário (e-mail e permissão) passados de outra tela.
+     * Ativa o sidebar correto com base na permissão e carrega os usuários.
+     * @param email O e-mail do usuário logado.
+     * @param permission A permissão (função) do usuário logado (ex: "admin", "usuario").
+     */
     public void initData(String email, String permission) {
         this.currentUserEmail = email;
         this.currentUserPermission = permission;
@@ -159,27 +180,41 @@ public class GestaoUsuariosController implements Initializable {
             }
         } else {
             showAlert(Alert.AlertType.ERROR, "Acesso Negado", "Você não tem permissão para acessar esta tela.");
+            // Caso não seja admin, esconde o sidebar de admin e exibe o de usuário padrão (se existir)
             if (sidebarAdminPane != null) {
                 sidebarAdminPane.setVisible(false);
                 sidebarAdminPane.setManaged(false);
             }
-            if (sidebarPane != null) {
+            if (sidebarPane != null) { // Garante que o sidebar de usuário esteja visível, se aplicável
                 sidebarPane.setVisible(true);
                 sidebarPane.setManaged(true);
             }
+            // Opcional: Redirecionar para uma tela permitida caso o acesso seja negado
+            ScreenManager.loadScreen((Node) tabelaUsuarios, "MenuUser.fxml", currentUserEmail, currentUserPermission);
         }
         carregarUsuarios();
     }
 
+    // --- Métodos de Controle do Sidebar ---
+
+    /**
+     * Lida com o evento de clique no botão de menu (geralmente um ícone).
+     * Chama o método para alternar o estado do sidebar (abrir/fechar).
+     * @param event O evento de clique do mouse.
+     */
     @FXML
     private void handleMenuButton(MouseEvent event) {
         toggleSidebar();
     }
 
+    /**
+     * Alterna a visibilidade e animação de deslizamento do sidebar e o fade do overlay.
+     * Se o sidebar estiver aberto, ele fecha; se estiver fechado, ele abre.
+     */
     private void toggleSidebar() {
         if (overlayPane == null) {
             System.err.println("OverlayPane não está injetado. Verifique o FXML.");
-            return; // Sai do método para evitar NullPointerException
+            return;
         }
 
         TranslateTransition currentSlideOut = null;
@@ -201,7 +236,6 @@ public class GestaoUsuariosController implements Initializable {
             return;
         }
 
-
         if (isSidebarOpen) {
             // Lógica para FECHAR o sidebar
             if (currentSlideOut != null) {
@@ -211,56 +245,79 @@ public class GestaoUsuariosController implements Initializable {
             // Animação de fade-out para o overlayPane
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.3), overlayPane);
             fadeOut.setFromValue(overlayPane.getOpacity());
-            fadeOut.setToValue(0.0); // Totalmente transparente
+            fadeOut.setToValue(0.0);
             fadeOut.play();
             fadeOut.setOnFinished(event -> {
-                overlayPane.setVisible(false); // Esconde o overlay após o fade
-                overlayPane.setMouseTransparent(true); // Torna transparente a cliques
+                overlayPane.setVisible(false);
+                overlayPane.setMouseTransparent(true);
             });
 
         } else {
             // Lógica para ABRIR o sidebar
-            overlayPane.toFront(); // Coloca o overlay na frente de tudo (exceto o sidebar)
-            overlayPane.setVisible(true); // Torna o overlay visível
-            overlayPane.setMouseTransparent(false); // Permite cliques no overlay para fechar
+            overlayPane.toFront();
+            overlayPane.setVisible(true);
+            overlayPane.setMouseTransparent(false);
 
             // Animação de fade-in para o overlayPane
             FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), overlayPane);
             fadeIn.setFromValue(overlayPane.getOpacity());
-            fadeIn.setToValue(0.4); // Exemplo: 40% de opacidade para escurecer a tela
+            fadeIn.setToValue(0.4);
             fadeIn.play();
 
             if (currentSidebar != null && currentSlideIn != null) {
-                currentSidebar.toFront(); // Coloca o sidebar na frente do overlay
+                currentSidebar.toFront();
+                currentSidebar.setVisible(true); // Garante que o sidebar esteja visível antes de deslizar
+                currentSidebar.setManaged(true); // Garante que o sidebar ocupe espaço
                 currentSlideIn.play();
             }
         }
         isSidebarOpen = !isSidebarOpen;
     }
 
+    /**
+     * Método auxiliar que verifica se o sidebar está aberto e o fecha.
+     * Utilizado antes de navegar para uma nova tela para garantir uma transição suave.
+     */
+    private void closeSidebarIfOpen() {
+        if (isSidebarOpen) {
+            toggleSidebar();
+        }
+    }
+
+    // --- Métodos de Ação da Tela de Gestão de Usuários ---
+
+    /**
+     * Carrega todos os usuários do banco de dados e os exibe na tabela.
+     * Exibe mensagens de status (sucesso ou erro).
+     */
     private void carregarUsuarios() {
         listaDeUsuarios.clear();
         try {
             List<User> usuariosDoBanco = userDao.getAllUsers();
             listaDeUsuarios.addAll(usuariosDoBanco);
             mensagemStatus.setText("Usuários carregados do banco de dados.");
-            mensagemStatus.setStyle("-fx-text-fill: green;"); // Estilo para sucesso
+            mensagemStatus.setStyle("-fx-text-fill: green;");
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro ao Carregar Usuários", "Não foi possível carregar os usuários: " + e.getMessage());
             mensagemStatus.setText("Erro ao carregar usuários: " + e.getMessage());
-            mensagemStatus.setStyle("-fx-text-fill: red;"); // Estilo para erro
+            mensagemStatus.setStyle("-fx-text-fill: red;");
         } finally {
-            tabelaUsuarios.refresh();
-            mensagemStatus.setVisible(true); // Garante que a mensagem fique visível após a operação
+            if (tabelaUsuarios != null) tabelaUsuarios.refresh();
+            if (mensagemStatus != null) mensagemStatus.setVisible(true);
         }
     }
 
+    /**
+     * Lida com o evento de pesquisa de usuários.
+     * Filtra a lista de usuários exibida na tabela com base no termo de pesquisa.
+     * @param event O evento de ação.
+     */
     @FXML
     private void handlePesquisarUsuario(ActionEvent event) {
         String termoPesquisa = campoPesquisa.getText().toLowerCase();
         if (termoPesquisa.isEmpty()) {
-            carregarUsuarios();
+            carregarUsuarios(); // Se o campo de pesquisa estiver vazio, carrega todos os usuários
             return;
         }
 
@@ -277,6 +334,11 @@ public class GestaoUsuariosController implements Initializable {
         mensagemStatus.setVisible(true);
     }
 
+    /**
+     * Lida com o evento de edição de usuário.
+     * Exibe um alerta informando que a funcionalidade de edição deve ser implementada.
+     * @param event O evento de ação.
+     */
     @FXML
     private void handleEditarUsuario(ActionEvent event) {
         User usuarioSelecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
@@ -287,6 +349,11 @@ public class GestaoUsuariosController implements Initializable {
         }
     }
 
+    /**
+     * Lida com o evento de remoção de usuário.
+     * Exibe um alerta de confirmação e, se confirmado, remove o usuário do banco de dados e da tabela.
+     * @param event O evento de ação.
+     */
     @FXML
     private void handleRemoverUsuario(ActionEvent event) {
         User usuarioSelecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
@@ -300,7 +367,7 @@ public class GestaoUsuariosController implements Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     userDao.deleteUser(usuarioSelecionado.getId());
-                    listaDeUsuarios.remove(usuarioSelecionado);
+                    listaDeUsuarios.remove(usuarioSelecionado); // Remove da ObservableList
                     mensagemStatus.setText("Usuário " + usuarioSelecionado.getFullName() + " removido com sucesso.");
                     mensagemStatus.setStyle("-fx-text-fill: green;");
                 } catch (SQLException e) {
@@ -309,7 +376,7 @@ public class GestaoUsuariosController implements Initializable {
                     mensagemStatus.setText("Erro ao remover usuário: " + e.getMessage());
                     mensagemStatus.setStyle("-fx-text-fill: red;");
                 } finally {
-                    mensagemStatus.setVisible(true);
+                    if (mensagemStatus != null) mensagemStatus.setVisible(true);
                 }
             }
         } else {
@@ -317,6 +384,11 @@ public class GestaoUsuariosController implements Initializable {
         }
     }
 
+    /**
+     * Lida com o evento de atualização da tabela.
+     * Recarrega todos os usuários do banco de dados.
+     * @param event O evento de ação.
+     */
     @FXML
     private void handleAtualizarTabela(ActionEvent event) {
         carregarUsuarios();
@@ -324,52 +396,54 @@ public class GestaoUsuariosController implements Initializable {
         mensagemStatus.setVisible(true);
     }
 
-    // --- Métodos de Navegação ---
-    // Agora, para navegar, vamos simplesmente chamar toggleSidebar() antes de carregar uma nova tela
-    // se o sidebar estiver aberto. Isso garante que ele se feche suavemente.
-    private void closeSidebarIfOpen() {
-        if (isSidebarOpen) {
-            toggleSidebar(); // Chama o toggle para fechar
-        }
+    /**
+     * Exibe um alerta simples ao usuário.
+     * @param type O tipo de alerta (INFO, WARNING, ERROR, etc.).
+     * @param title O título do alerta.
+     * @param message A mensagem a ser exibida no alerta.
+     */
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
+
+    // --- Métodos de Navegação (Menu Lateral/Sidebar) ---
 
     @FXML
     private void handleConsultarHoras(ActionEvent event) {
-        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
-        ScreenManager.loadScreen((Node) event.getSource(), "MenuUser.fxml", currentUserEmail, currentUserPermission);
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "RegistrosPonto.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleRegistrarMarcacao(ActionEvent event) {
-        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
-        ScreenManager.loadScreen((Node) event.getSource(), "RegistrarMarcacao.fxml", currentUserEmail, currentUserPermission);
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "MenuUser.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleGestao(ActionEvent event) {
-        // Se já está na tela de gestão e o sidebar está aberto, apenas fecha-o.
-        // Se está na tela de gestão e o sidebar está fechado, não faz nada.
-        // Não é necessário carregar a mesma tela.
-        if (isSidebarOpen) {
-            toggleSidebar();
-        }
+        closeSidebarIfOpen();
     }
 
     @FXML
     private void handleCadastrar(ActionEvent event) {
-        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
-        ScreenManager.loadScreen((Node) event.getSource(), "Cadastro.fxml", currentUserEmail, currentUserPermission);
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "TelaCadastro.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleRelatorio(ActionEvent event) {
-        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
-        showAlert(Alert.AlertType.INFORMATION, "Funcionalidade", "Exportar Relatório ainda não implementado.");
+        closeSidebarIfOpen();
+        ScreenManager.loadScreen((Node) event.getSource(), "Relatorios.fxml", currentUserEmail, currentUserPermission);
     }
 
     @FXML
     private void handleConfiguracoes(ActionEvent event) {
-        closeSidebarIfOpen(); // Fecha o sidebar antes de navegar
+        closeSidebarIfOpen();
         ScreenManager.loadScreen((Node) event.getSource(), "Configuracoes.fxml", currentUserEmail, currentUserPermission);
     }
 
@@ -382,21 +456,9 @@ public class GestaoUsuariosController implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.close();
-            try {
-                ScreenManager.loadScreen(null, "TelaLogin.fxml", null, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // Se confirmar, fecha a janela atual e redireciona para a tela de login
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+            ScreenManager.loadScreen(null, "TelaLogin.fxml", null, null);
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
