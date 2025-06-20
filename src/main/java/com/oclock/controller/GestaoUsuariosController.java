@@ -341,14 +341,22 @@ public class GestaoUsuariosController implements Initializable {
      */
     @FXML
     private void handleEditarUsuario(ActionEvent event) {
-        User usuarioSelecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
+    	User usuarioSelecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
         if (usuarioSelecionado != null) {
-            showAlert(Alert.AlertType.INFORMATION, "Editar Usuário", "Funcionalidade de edição para: " + usuarioSelecionado.getFullName() + ".\nRedirecione para a tela de edição ou abra um diálogo.\n(Para editar, você precisaria carregar os dados do " + usuarioSelecionado.getEmail() + " e usar userDao.updateUserDetails ou updateUser)");
+            try {
+
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+                ScreenManager.loadScreen(currentStage, "EditarUsuario.fxml", usuarioSelecionado, currentUserEmail, currentUserPermission);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erro ao Abrir Edição", "Não foi possível abrir a tela de edição: " + e.getMessage());
+            }
         } else {
             showAlert(Alert.AlertType.WARNING, "Nenhum Usuário Selecionado", "Por favor, selecione um usuário para editar.");
         }
     }
-
     /**
      * Lida com o evento de remoção de usuário.
      * Exibe um alerta de confirmação e, se confirmado, remove o usuário do banco de dados e da tabela.

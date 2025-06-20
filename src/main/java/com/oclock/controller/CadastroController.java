@@ -222,7 +222,7 @@ public class CadastroController implements Initializable {
             return;
         }
 
-        if (isSidebarOpen) { // Se o sidebar está aberto, fecha
+        if (isSidebarOpen) { 
             currentSlideTransition = "admin".equalsIgnoreCase(userPermission) ? slideOutAdmin : slideOutUser;
 
             if (currentSlideTransition != null) {
@@ -455,7 +455,6 @@ public class CadastroController implements Initializable {
 
     @FXML
     private void handleCadastrar(ActionEvent event) {
-        // Já está na tela de cadastro, apenas garante que o sidebar se feche se estiver aberto
         if (isSidebarOpen) {
             toggleSidebar();
         }
@@ -476,7 +475,6 @@ public class CadastroController implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // ScreenManager agora cuida de fechar a janela anterior se necessário
             ScreenManager.loadScreen((Node) event.getSource(), "TelaLogin.fxml", null, null);
         }
     }
