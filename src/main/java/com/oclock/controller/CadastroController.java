@@ -64,6 +64,7 @@ public class CadastroController implements Initializable {
     private boolean isSidebarOpen = false;
 
     // --- Transições de animação para o sidebar ---
+    // Instanciadas no initialize para garantir que os panes não sejam nulos
     private TranslateTransition slideInAdmin;
     private TranslateTransition slideOutAdmin;
     private TranslateTransition slideInUser;
@@ -87,7 +88,7 @@ public class CadastroController implements Initializable {
         this.userEmail = email;
         this.userPermission = role;
         System.out.println("E-mail: " + userEmail + ", Permissão: " + userPermission);
-        updateSidebarVisibility();
+        updateSidebarVisibility(); // Chama após userPermission estar definido
     }
 
     /**
@@ -103,6 +104,7 @@ public class CadastroController implements Initializable {
         if (overlayPane != null) {
             overlayPane.setVisible(false);
             overlayPane.setOpacity(0.0);
+            overlayPane.setMouseTransparent(true); // *** CRUCIAL: Impede que capture cliques quando invisível/fechado ***
             overlayPane.setOnMouseClicked(this::handleOverlayClick);
         } else {
             System.err.println("ERRO: overlayPane é NULO. Verifique o fx:id no FXML.");
@@ -113,6 +115,7 @@ public class CadastroController implements Initializable {
             sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
             sidebarPane.setVisible(false);
             sidebarPane.setManaged(false);
+            sidebarPane.setMouseTransparent(true); // *** CRUCIAL: Impede que capture cliques quando fechado ***
             slideInUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
             slideInUser.setToX(0);
             slideOutUser = new TranslateTransition(Duration.seconds(0.3), sidebarPane);
@@ -126,6 +129,7 @@ public class CadastroController implements Initializable {
             sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
             sidebarAdminPane.setVisible(false);
             sidebarAdminPane.setManaged(false);
+            sidebarAdminPane.setMouseTransparent(true); // *** CRUCIAL: Impede que capture cliques quando fechado ***
             slideInAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
             slideInAdmin.setToX(0);
             slideOutAdmin = new TranslateTransition(Duration.seconds(0.3), sidebarAdminPane);
@@ -163,6 +167,8 @@ public class CadastroController implements Initializable {
     /**
      * Atualiza a visibilidade e o gerenciamento de espaço dos sidebars com base na permissão do usuário.
      * O sidebar de admin é mostrado se o usuário for admin, caso contrário, o sidebar padrão é mostrado.
+     * NOTA: Este método agora apenas configura qual sidebar DEVE ser visível.
+     * A visibilidade e `mouseTransparent` durante a abertura/fechamento são gerenciadas em `toggleSidebar`.
      */
     private void updateSidebarVisibility() {
         if (sidebarPane == null || sidebarAdminPane == null) {
@@ -170,30 +176,24 @@ public class CadastroController implements Initializable {
             return;
         }
 
+        // Garante que ambos os sidebars estejam fora da tela e não gerenciados por padrão
+        sidebarAdminPane.setTranslateX(-sidebarAdminPane.getPrefWidth());
+        sidebarPane.setTranslateX(-sidebarPane.getPrefWidth());
+
+        sidebarAdminPane.setVisible(false);
+        sidebarAdminPane.setManaged(false);
+        sidebarAdminPane.setMouseTransparent(true); // Certifique-se de que estejam transparentes ao mouse
+        sidebarPane.setVisible(false);
+        sidebarPane.setManaged(false);
+        sidebarPane.setMouseTransparent(true); // Certifique-se de que estejam transparentes ao mouse
+
         if (userPermission == null) {
-            System.err.println("Erro: Permissão do usuário não definida em CadastroController para configurar sidebar.");
-            // Default para usuário comum se a permissão não for definida
-            sidebarPane.setVisible(true);
-            sidebarPane.setManaged(true);
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
-            return;
+            System.err.println("Erro: Permissão do usuário não definida em CadastroController para configurar sidebar. Defaulting to user.");
+            userPermission = "usuario"; // Define um padrão seguro
         }
-
-        boolean isAdmin = "ADMIN".equalsIgnoreCase(userPermission);
-
-        if (isAdmin) {
-            sidebarAdminPane.setVisible(true);
-            sidebarAdminPane.setManaged(true);
-            sidebarPane.setVisible(false);
-            sidebarPane.setManaged(false);
-        } else {
-            sidebarAdminPane.setVisible(false);
-            sidebarAdminPane.setManaged(false);
-            sidebarPane.setVisible(true);
-            sidebarPane.setManaged(true);
-        }
+        // A visibilidade real e "mouseTransparent" será definida em toggleSidebar
     }
+
 
     /**
      * Retorna o AnchorPane do sidebar ativo com base na permissão do usuário.
@@ -230,6 +230,7 @@ public class CadastroController implements Initializable {
                 currentSlideTransition.setOnFinished(e -> {
                     activeSidebar.setVisible(false);
                     activeSidebar.setManaged(false);
+                    activeSidebar.setMouseTransparent(true); // *** CRUCIAL: Libera os cliques no sidebar fechado ***
                 });
             }
 
@@ -239,13 +240,16 @@ public class CadastroController implements Initializable {
             fadeOut.play();
             fadeOut.setOnFinished(event -> {
                 overlayPane.setVisible(false);
-                overlayPane.setMouseTransparent(true);
+                overlayPane.setMouseTransparent(true); // *** CRUCIAL: Libera os cliques na tela principal ***
             });
 
         } else { // Se o sidebar está fechado, abre
+            // Garante que o overlay e o sidebar venham para a frente
             overlayPane.toFront();
+            activeSidebar.toFront(); // Certifique-se que o sidebar ativo também venha para frente
+
             overlayPane.setVisible(true);
-            overlayPane.setMouseTransparent(false);
+            overlayPane.setMouseTransparent(false); // Permite que o overlay capture cliques para fechar o sidebar
 
             FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), overlayPane);
             fadeIn.setFromValue(overlayPane.getOpacity());
@@ -255,9 +259,9 @@ public class CadastroController implements Initializable {
             currentSlideTransition = "admin".equalsIgnoreCase(userPermission) ? slideInAdmin : slideInUser;
 
             if (activeSidebar != null && currentSlideTransition != null) {
-                activeSidebar.toFront();
                 activeSidebar.setVisible(true);
                 activeSidebar.setManaged(true);
+                activeSidebar.setMouseTransparent(false); // Permite que os botões dentro do sidebar sejam clicáveis
                 currentSlideTransition.play();
             }
         }
@@ -305,8 +309,10 @@ public class CadastroController implements Initializable {
      */
     @FXML
     private void cadastrarUsuario(ActionEvent event) {
+        // Assegura que todos os campos FXML estão carregados antes de continuar
         if (campoNome == null || campoEmail == null || campoSenha == null || campoCPF == null ||
-            userUsuarioRadio == null || userAdminRadio == null || mensagemErro == null) {
+            userUsuarioRadio == null || userAdminRadio == null || mensagemErro == null ||
+            permissaoToggleGroup == null) { // Adicionado permissaoToggleGroup ao null check
             System.err.println("ERRO: Nem todos os campos de cadastro estão mapeados no FXML. Verifique os fx:id.");
             exibirMensagem("Erro interno: Campos não carregados. Contate o suporte.", Color.RED);
             return;
@@ -319,6 +325,7 @@ public class CadastroController implements Initializable {
 
         String permissao = "";
 
+        // Verifica qual RadioButton foi selecionado
         if (permissaoToggleGroup.getSelectedToggle() == userUsuarioRadio) {
             permissao = "usuario";
         } else if (permissaoToggleGroup.getSelectedToggle() == userAdminRadio) {
@@ -328,6 +335,7 @@ public class CadastroController implements Initializable {
             return;
         }
 
+        // Validações de entrada
         if (nome.isEmpty() || email.isEmpty() || senha.isEmpty() || cpf.isEmpty()) {
             exibirMensagem("Todos os campos são obrigatórios!", Color.RED);
             return;
@@ -419,6 +427,8 @@ public class CadastroController implements Initializable {
         }
     }
 
+    // --- Métodos de Navegação (Menu Lateral/Sidebar) ---
+
     @FXML
     private void handleRegistrarMarcacao(ActionEvent event) {
         closeSidebarIfOpen();
@@ -445,6 +455,7 @@ public class CadastroController implements Initializable {
 
     @FXML
     private void handleCadastrar(ActionEvent event) {
+        // Já está na tela de cadastro, apenas garante que o sidebar se feche se estiver aberto
         if (isSidebarOpen) {
             toggleSidebar();
         }
@@ -465,8 +476,8 @@ public class CadastroController implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            // ScreenManager agora cuida de fechar a janela anterior se necessário
             ScreenManager.loadScreen((Node) event.getSource(), "TelaLogin.fxml", null, null);
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         }
     }
 }
